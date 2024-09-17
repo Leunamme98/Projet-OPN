@@ -1,8 +1,7 @@
 package com.officePharmaceutiqueNationale.OPN.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -25,4 +24,21 @@ public class Medicament extends Produit {
      */
     private String unite;
 
+
+    /**
+     * Forme galénique associée à ce médicament.
+     * Relation plusieurs-à-un avec l'entité FormeGalenique.
+     */
+    @ManyToOne
+    @JoinColumn(name = "forme_galenique_id")
+    @NotNull(message = "La forme galénique ne peut pas être nulle.")
+    private FormeGalenique formeGalenique;
+
+    /**
+     * Spécialité à laquelle appartient ce médicament.
+     * Une spécialité peut regrouper plusieurs médicaments.
+     */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "specialite_id")
+    private Specialite specialite;
 }
