@@ -3,13 +3,14 @@ package com.officePharmaceutiqueNationale.OPN.model;
 import jakarta.persistence.Entity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.EqualsAndHashCode;
 
-@Entity
-@Data @NoArgsConstructor @AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
-public class DispositifMedical extends Article{
-
-
+@Entity
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class DispositifMedical extends Article {
+    private String paysFabrication;
 }
