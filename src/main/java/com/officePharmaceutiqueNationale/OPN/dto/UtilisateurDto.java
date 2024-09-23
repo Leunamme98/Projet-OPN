@@ -1,23 +1,18 @@
-package com.officePharmaceutiqueNationale.OPN.model;
+package com.officePharmaceutiqueNationale.OPN.dto;
 
-import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Entity
 @Data @AllArgsConstructor @NoArgsConstructor
-@Inheritance(strategy = InheritanceType.JOINED)
-public class Utilisateur {
+@Builder
+public class UtilisateurDto {
 
-    @Id
-    @NotBlank
-    private String id;
-
-    @NotBlank(message = "Le nom d'utilisateur ne peut pas être vide")
+    @NotBlank(message = "L'identifiant ne peut pas être vide")
     @Size(min = 3, max = 50)
     private String identifiant;
 
@@ -35,4 +30,5 @@ public class Utilisateur {
     private String motDePasse;
 
     private String cheminPhoto;
+
 }

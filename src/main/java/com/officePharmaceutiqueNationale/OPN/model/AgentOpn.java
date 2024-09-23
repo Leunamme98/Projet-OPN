@@ -16,6 +16,6 @@ import java.time.LocalDate;
 public class AgentOpn extends Utilisateur {
 
     private String matriculeAgent;
-
     private LocalDate dateEmbauche;
+
 }

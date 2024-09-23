@@ -20,5 +20,4 @@ public class FormeGalenique {
     @OneToMany(mappedBy = "formeGalenique")
     private List<Medicament> medicaments;
 
-
 }
