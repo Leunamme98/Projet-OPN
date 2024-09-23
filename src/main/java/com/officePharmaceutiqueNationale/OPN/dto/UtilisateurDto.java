@@ -1,21 +1,20 @@
-package com.officePharmaceutiqueNationale.OPN.model;
+package com.officePharmaceutiqueNationale.OPN.dto;
 
-import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Entity
 @Data
-@AllArgsConstructor
+@Builder
 @NoArgsConstructor
-public class Utilisateur {
+@AllArgsConstructor
+public class UtilisateurDto {
 
-    @Id
     @NotBlank
     private String id;
 
@@ -28,6 +27,7 @@ public class Utilisateur {
 
     private String adresse;
 
+    @Pattern(regexp = "\\d{10}", message = "Numéro de téléphone invalide")
     private String numeroTelephone;
 
     @Email(message = "Email invalide")

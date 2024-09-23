@@ -2,25 +2,26 @@ package com.officePharmaceutiqueNationale.OPN.model;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
 import java.util.List;
 
 @Entity
 @Data @AllArgsConstructor @NoArgsConstructor
-public class MouvementStock {
+public class SpecialitePharmaceutique {
 
     @Id
-    private String idMouvementStock;
+    private String idSpecialiteMedicament;
 
-    private int quantite;
-    private TypeMouvement typeMouvement;
-    private LocalDate dateMouvement;
+    private String libelleSpecialiteMedicament;
+    private String nomLaboratoire;
+
+    @OneToMany(mappedBy = "specialitePharmaceutique")
+    private List<Medicament> Medicaments;
 
     @ManyToOne
-    private Article article;
-
+    private Dci dci;
 }

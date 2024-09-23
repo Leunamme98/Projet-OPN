@@ -4,40 +4,25 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
-import java.util.Set;
+import java.util.List;
 
-/**
- * Représente un client dans le système.
- */
 @Entity
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
+@Data @NoArgsConstructor @AllArgsConstructor
+@EqualsAndHashCode(callSuper = true)
 public class Client extends Utilisateur {
 
-   /**
-    * Nom de la structure du client.
-    */
-   private String nomStructure;
+    private String nomEntreprise;
+    private String numeroAccreditation;
+    private String typeStructure;
+    private String nomDuResponsable;
+    private String numeroContactResponsable;
 
-   /**
-    * Numéro d'accréditation du client.
-    */
-   private String numeroAccreditation;
+    @OneToMany(mappedBy = "client")
+    private List<Panier> paniers;
 
-   /**
-    * Commandes passées par le client.
-    */
-   @OneToMany(mappedBy = "client")
-   private Set<Commande> commandes;
-
-
-
-   /**
-    * Ensemble des paniers liés au client.
-    */
-   @OneToMany(mappedBy = "client")
-   private Set<Panier> paniers;
+    @OneToMany
+    private List<Commande> commandes;
 }
