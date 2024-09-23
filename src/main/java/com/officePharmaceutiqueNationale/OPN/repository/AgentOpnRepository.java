@@ -7,3 +7,4 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 @RepositoryRestResource(path = "restAgentOpn")
 public interface AgentOpnRepository extends JpaRepository<AgentOpn, String> {
 }
+ 
