@@ -17,7 +17,7 @@ public class ArticleDto {
     private String code;
     private String libelle;
     private LocalDate dateExpiration;
-    private Double prixDeVente;
+    private Double prixGenerique;
     private int quantiteStock;
     private String description;
 

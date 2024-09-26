@@ -18,7 +18,8 @@ public class MouvementStockDto {
     private int quantite;
     private TypeMouvement typeMouvement;
     private LocalDate dateMouvement;
-
+    private Double prix;
+    
     // Relation avec l'article
     private ArticleDto article;
 }

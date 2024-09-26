@@ -19,7 +19,7 @@ public class Article {
     private String code;
     private String Libelle;
     private LocalDate dateExpiration;
-    private Double prixDeVente;
+    private Double prixGenerique;
     private int quantiteStock;
     private String description;
 
