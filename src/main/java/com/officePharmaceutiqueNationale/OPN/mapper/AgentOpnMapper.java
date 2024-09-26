@@ -7,10 +7,8 @@ import org.mapstruct.Mapper;
 
 @Mapper
 public interface AgentOpnMapper {
-
      
     AgentOpnDto toDto(AgentOpn agentOpn);
-
-     
     AgentOpn toEntity(AgentOpnDto agentOpnDto);
+
 }
