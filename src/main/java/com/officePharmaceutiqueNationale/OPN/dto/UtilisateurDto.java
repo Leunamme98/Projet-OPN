@@ -12,6 +12,8 @@ import lombok.NoArgsConstructor;
 @Builder
 public class UtilisateurDto {
 
+    private String id;
+
     @NotBlank(message = "L'identifiant ne peut pas être vide")
     @Size(min = 3, max = 50)
     private String identifiant;
@@ -30,5 +32,4 @@ public class UtilisateurDto {
     private String motDePasse;
 
     private String cheminPhoto;
-
 }

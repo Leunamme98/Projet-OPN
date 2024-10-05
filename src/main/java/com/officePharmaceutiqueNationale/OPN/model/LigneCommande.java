@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 public class LigneCommande {
 
     @Id
-    private String idLigneCommande;
+    private String id;
 
     private int quantiteLigneCommande;
     private Double prixLigneCommande;

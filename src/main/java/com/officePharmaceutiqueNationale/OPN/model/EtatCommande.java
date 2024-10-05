@@ -5,5 +5,7 @@ public enum EtatCommande {
     CONFIRMEE,
     EN_COURS,
     LIVREE,
-    ANNULEE
+    ANNULEE,
+    TRAITEE,
+    MISE_LIVRAISON,
 }

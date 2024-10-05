@@ -13,7 +13,7 @@ import java.time.LocalDate;
 public class Facture {
 
     @Id
-    private String idFacture;
+    private String id;
     private LocalDate dateFacture;
     private String cheminPdfFacture;
 

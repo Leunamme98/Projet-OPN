@@ -9,30 +9,20 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Entity
-@Data @NoArgsConstructor @AllArgsConstructor
+@Data
+@NoArgsConstructor @AllArgsConstructor
 @Inheritance(strategy = InheritanceType.JOINED)
-public class Article {
+public abstract class Article {
 
     @Id
     private String id;
 
     private String code;
-    private String Libelle;
+    private String libelle;
     private LocalDate dateExpiration;
     private Double prixGenerique;
-    private int quantiteStock;
+    private int quantiteStockSeuil;
     private String description;
-
-    @OneToMany(mappedBy = "article")
-    private List<LignePanier> lignePaniers;
-
-    @OneToMany(mappedBy = "article")
-    private List<MouvementStock> mouvementStocks;
-
-    @OneToMany(mappedBy = "article")
-    private List<LigneCommande> ligneCommandes;
-
-    @OneToMany(mappedBy = "article")
-    private List<LigneLivraison> ligneLivraisons;
+    private EtatArticle etat;
 
 }

@@ -1,29 +1,26 @@
 package com.officePharmaceutiqueNationale.OPN.dto;
 
+import com.officePharmaceutiqueNationale.OPN.model.EtatArticle;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
+
 import java.time.LocalDate;
-import java.util.List;
 
 @Data
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ArticleDto {
+@SuperBuilder
+public abstract class ArticleDto {
 
     private String id;
+
     private String code;
     private String libelle;
     private LocalDate dateExpiration;
     private Double prixGenerique;
-    private int quantiteStock;
+    private int quantiteStockSeuil;
     private String description;
-
-    // Relations
-    private List<LignePanierDto> lignePaniers;
-    private List<MouvementStockDto> mouvementStocks;
-    private List<LigneCommandeDto> ligneCommandes;
-    private List<LigneLivraisonDto> ligneLivraisons;
+    private EtatArticle etat;
 }

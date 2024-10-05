@@ -8,12 +8,11 @@ import lombok.NoArgsConstructor;
 import java.util.List;
 
 @Data
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class PanierDto {
 
-    private String panierId;
+    private String id;
 
     // Relation avec Client
     private ClientDto client;

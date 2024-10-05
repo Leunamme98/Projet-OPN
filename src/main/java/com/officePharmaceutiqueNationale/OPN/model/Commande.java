@@ -11,9 +11,10 @@ import java.util.List;
 public class Commande {
 
     @Id
-    private String idCommande;
+    private String id;
 
-    private int quantiteTotaleCommande;
+    private Double montantTotalCommande;
+
     private EtatCommande etatCommande;
 
     @OneToMany(mappedBy = "commande")

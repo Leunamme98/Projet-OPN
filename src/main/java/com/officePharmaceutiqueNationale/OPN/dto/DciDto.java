@@ -1,20 +1,16 @@
 package com.officePharmaceutiqueNationale.OPN.dto;
 
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
 
-@Data
+@Data @NoArgsConstructor @AllArgsConstructor
 @Builder
-@NoArgsConstructor
-@AllArgsConstructor
 public class DciDto {
-
-    private String idDci;
+    private String id;
     private String nomDci;
-
-    private List<SpecialitePharmaceutiqueDto> specialitePharmaceutiques;
+    private Boolean isDeleted;
 }

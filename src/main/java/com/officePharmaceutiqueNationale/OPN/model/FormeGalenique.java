@@ -13,11 +13,7 @@ import java.util.List;
 public class FormeGalenique {
 
     @Id
-    private String idFormeGalenique;
-
+    private String id;
     private String nomFormeGalenique;
-
-    @OneToMany(mappedBy = "formeGalenique")
-    private List<Medicament> medicaments;
-
+    private String descriptionFormeGalenique;
 }

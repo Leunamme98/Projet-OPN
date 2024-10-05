@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 public class LigneLivraison {
 
     @Id
-    private String idLigneLivraison;
+    private String id;
 
     private int quantiteLivraison;
 

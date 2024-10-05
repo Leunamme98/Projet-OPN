@@ -15,7 +15,7 @@ import java.util.List;
 public class Livraison {
 
     @Id
-    private String idLivraison;
+    private String id;
 
     private LocalDate dateLivraison;
     private EtatLivraison etatLivraison;

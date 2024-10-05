@@ -5,16 +5,15 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
 
 @Data
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class FormeGaleniqueDto {
 
-    private String idFormeGalenique;
+    private String id;
     private String nomFormeGalenique;
+    private String descriptionFormeGalenique;
 
-    private List<MedicamentDto> medicaments;
 }

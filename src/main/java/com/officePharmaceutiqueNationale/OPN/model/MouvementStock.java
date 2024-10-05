@@ -7,14 +7,13 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
-import java.util.List;
 
 @Entity
 @Data @AllArgsConstructor @NoArgsConstructor
 public class MouvementStock {
 
     @Id
-    private String idMouvementStock;
+    private String id;
 
     private int quantite;
     private TypeMouvement typeMouvement;

@@ -9,12 +9,11 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDate;
 
 @Data
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class ReclamationDto {
 
-    private String idReclamation;
+    private String id;
     private String descriptionReclamation;
     private LocalDate dateReclamation;
     private EtatReclamation etatReclamation;

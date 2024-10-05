@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 public class LignePanier {
 
     @Id
-    private String idLignePanier;
+    private String id;
 
     private int quantite;
 

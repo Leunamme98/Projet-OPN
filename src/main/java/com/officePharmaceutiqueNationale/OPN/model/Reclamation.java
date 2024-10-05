@@ -14,7 +14,7 @@ import java.time.LocalDate;
 public class Reclamation {
 
     @Id
-    private String idReclamation;
+    private String id;
 
     private String descriptionReclamation;
     private LocalDate dateReclamation;

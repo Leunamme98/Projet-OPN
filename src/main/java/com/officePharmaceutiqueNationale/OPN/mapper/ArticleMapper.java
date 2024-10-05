@@ -1,16 +1,17 @@
 package com.officePharmaceutiqueNationale.OPN.mapper;
 
-import com.officePharmaceutiqueNationale.OPN.dto.ArticleDto;
-import com.officePharmaceutiqueNationale.OPN.model.Article;
+import com.officePharmaceutiqueNationale.OPN.dto.DispositifMedicalDto;
+import com.officePharmaceutiqueNationale.OPN.dto.MedicamentDto;
+import com.officePharmaceutiqueNationale.OPN.model.DispositifMedical;
+import com.officePharmaceutiqueNationale.OPN.model.Medicament;
 import org.mapstruct.Mapper;
- 
 
-@Mapper
+@Mapper(componentModel = "spring")
 public interface ArticleMapper {
 
-     
-    ArticleDto toDto(Article article);
+    MedicamentDto toDto(Medicament medicament);
+    Medicament toEntity(MedicamentDto medicamentDTO);
 
- 
-    Article toEntity(ArticleDto articleDto);
+    DispositifMedicalDto toDto(DispositifMedical dispositifMedical);
+    DispositifMedical toEntity(DispositifMedicalDto dispositifMedicalDTO);
 }

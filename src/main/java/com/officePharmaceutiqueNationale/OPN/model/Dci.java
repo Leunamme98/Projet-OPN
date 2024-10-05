@@ -13,10 +13,11 @@ import java.util.List;
 public class Dci {
 
     @Id
-    private String idDci;
+    private String id;
 
     private String nomDci;
+    private Boolean isDeleted;
 
-    @OneToMany(mappedBy = "dci")
-    private List<SpecialitePharmaceutique> specialitePharmaceutiques;
+
+
 }

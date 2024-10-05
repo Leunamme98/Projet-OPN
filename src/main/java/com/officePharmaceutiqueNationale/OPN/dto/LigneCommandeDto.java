@@ -6,12 +6,11 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class LigneCommandeDto {
 
-    private String idLigneCommande;
+    private String id;
     private int quantiteLigneCommande;
     private Double prixLigneCommande;
 

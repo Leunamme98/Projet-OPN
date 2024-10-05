@@ -12,7 +12,7 @@ import java.util.List;
 public class Panier {
 
     @Id
-    private String panierId;
+    private String id;
 
     @ManyToOne
     private Client client;

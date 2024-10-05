@@ -10,12 +10,11 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Data
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class LivraisonDto {
 
-    private String idLivraison;
+    private String id;
     private LocalDate dateLivraison;
     private EtatLivraison etatLivraison;
 

@@ -6,12 +6,11 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class LignePanierDto {
 
-    private String idLignePanier;
+    private String id;
     private int quantite;
 
     // Relations

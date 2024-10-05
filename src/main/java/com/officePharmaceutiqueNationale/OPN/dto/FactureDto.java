@@ -8,12 +8,11 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDate;
 
 @Data
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class FactureDto {
 
-    private String idFacture;
+    private String id;
     private LocalDate dateFacture;
     private String cheminPdfFacture;
     private CommandeDto commande;
