@@ -1,16 +1,13 @@
 package com.officePharmaceutiqueNationale.OPN.model;
 
+import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
 
-@EqualsAndHashCode(callSuper = true)
 @Entity
-@NoArgsConstructor
-@AllArgsConstructor
-@Data
+@DiscriminatorValue("Dispositif Médical")
+@Getter @Setter
 public class DispositifMedical extends Article {
     private String paysFabrication;
 }

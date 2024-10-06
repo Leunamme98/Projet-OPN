@@ -1,17 +1,13 @@
 package com.officePharmaceutiqueNationale.OPN.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
-
 import java.time.LocalDate;
-import java.util.List;
 
 @Entity
-@Data
-@NoArgsConstructor @AllArgsConstructor
 @Inheritance(strategy = InheritanceType.JOINED)
+@DiscriminatorColumn(name = "Article_type")
+@Data
 public abstract class Article {
 
     @Id
@@ -23,6 +19,6 @@ public abstract class Article {
     private Double prixGenerique;
     private int quantiteStockSeuil;
     private String description;
-    private EtatArticle etat;
+    private String etat;
 
 }

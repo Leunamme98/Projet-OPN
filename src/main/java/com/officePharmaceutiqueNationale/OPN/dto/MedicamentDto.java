@@ -1,19 +1,25 @@
 package com.officePharmaceutiqueNationale.OPN.dto;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
-import lombok.experimental.SuperBuilder;
+
+import java.time.LocalDate;
 
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
-@SuperBuilder
-@EqualsAndHashCode(callSuper = true)
-public class MedicamentDto extends ArticleDto {
+public class MedicamentDto {
+    private String id;
+
+    private String code;
+    private String libelle;
+    private LocalDate dateExpiration;
+    private Double prixGenerique;
+    private int quantiteStockSeuil;
+    private String description;
+    private String etat;
 
     private Double concentration;
     private String uniteConcentration;
+
+    private FormeGaleniqueDto formeGalenique;
+    private SpecialitePharmaceutiqueDto specialitePharmaceutique;
 
 }
