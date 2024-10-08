@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface SpecialitePharmaceutiqueService {
 
-    SpecialitePharmaceutiqueDto enregistrerUneSpecialite(SpecialitePharmaceutiqueDto specialiteDto, String idDci);
+    SpecialitePharmaceutiqueDto enregistrerUneSpecialite(SpecialitePharmaceutiqueDto specialitePharmaceutiqueDto);
 
     SpecialitePharmaceutiqueDto modifierUneSpecialite(SpecialitePharmaceutiqueDto specialiteDto);
 
@@ -20,4 +20,5 @@ public interface SpecialitePharmaceutiqueService {
     Page<SpecialitePharmaceutiqueDto> recuperationParPagination(int page, int limit);
 
     Page<SpecialitePharmaceutiqueDto> recuperationDesMetadonnees(int page, int limit);
+
 }

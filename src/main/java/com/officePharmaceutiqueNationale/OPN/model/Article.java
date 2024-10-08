@@ -19,6 +19,11 @@ public abstract class Article {
     private Double prixGenerique;
     private int quantiteStockSeuil;
     private String description;
-    private String etat;
+    private String cheminImage;
+
+    @Enumerated(EnumType.STRING)
+    private EtatArticle etat;
+
+    private Boolean isDeleted;
 
 }

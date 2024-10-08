@@ -2,13 +2,14 @@ package com.officePharmaceutiqueNationale.OPN.controller;
 
 import com.officePharmaceutiqueNationale.OPN.dto.FormeGaleniqueDto;
 import com.officePharmaceutiqueNationale.OPN.sercice.FormeGaleniqueService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/formes-galeniques")
+@RequestMapping("/opn/api/formes-galeniques")
 @CrossOrigin(origins = "*")
 public class FormeGaleniqueController {
 
@@ -22,27 +23,39 @@ public class FormeGaleniqueController {
     // Enregistrer une nouvelle forme galénique
     @PostMapping
     public ResponseEntity<FormeGaleniqueDto> enregistrerUneFormeGalenique(@RequestBody FormeGaleniqueDto formeGaleniqueDto) {
+        if (formeGaleniqueDto == null || formeGaleniqueDto.getNomFormeGalenique() == null || formeGaleniqueDto.getDescriptionFormeGalenique() == null) {
+            return ResponseEntity.badRequest().build();
+        }
         FormeGaleniqueDto savedFormeGalenique = formeGaleniqueService.enregistrerUneFormeGalenique(formeGaleniqueDto);
-        return ResponseEntity.ok(savedFormeGalenique);
+        return ResponseEntity.status(HttpStatus.CREATED).body(savedFormeGalenique);
     }
 
     // Modifier une forme galénique
-    @PatchMapping("/{id}")
-    public ResponseEntity<FormeGaleniqueDto> modifierUneFormeGalenique(@PathVariable String id, @RequestBody FormeGaleniqueDto formeGaleniqueDto) {
-        FormeGaleniqueDto updatedFormeGalenique = formeGaleniqueService.modifierUneFormeGalenique(id, formeGaleniqueDto);
+    @PutMapping
+    public ResponseEntity<FormeGaleniqueDto> modifierUneFormeGalenique(@RequestBody FormeGaleniqueDto formeGaleniqueDto) {
+        if (formeGaleniqueDto == null || formeGaleniqueDto.getId() == null) {
+            return ResponseEntity.badRequest().build();
+        }
+        FormeGaleniqueDto updatedFormeGalenique = formeGaleniqueService.modifierUneFormeGalenique(formeGaleniqueDto);
         return ResponseEntity.ok(updatedFormeGalenique);
     }
 
     // Supprimer une forme galénique
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> supprimerUneFormeGalenique(@PathVariable String id) {
+        if (id == null) {
+            return ResponseEntity.badRequest().build();
+        }
         formeGaleniqueService.supprimerUneFormeGalenique(id);
-        return ResponseEntity.noContent().build(); // Retourne un status 204 No Content
+        return ResponseEntity.noContent().build(); // Utilisation de 204 No Content
     }
 
     // Récupérer une forme galénique par ID
     @GetMapping("/{id}")
     public ResponseEntity<FormeGaleniqueDto> recupererUneFormeGaleniqueParId(@PathVariable String id) {
+        if (id == null) {
+            return ResponseEntity.badRequest().build();
+        }
         FormeGaleniqueDto formeGalenique = formeGaleniqueService.recupererUneFormeGaleniqueParId(id);
         return ResponseEntity.ok(formeGalenique);
     }
@@ -57,12 +70,16 @@ public class FormeGaleniqueController {
     // Récupération par pagination
     @GetMapping("/pagination")
     public ResponseEntity<List<FormeGaleniqueDto>> recuperationParPagination(@RequestParam int page, @RequestParam int limit) {
+        if (page < 0 || limit <= 0) {
+            return ResponseEntity.badRequest().build();
+        }
         return ResponseEntity.ok(formeGaleniqueService.recuperationParPagination(page, limit).getContent());
     }
 
     // Récupération des métadonnées par pagination
     @GetMapping("/metadonnees")
     public ResponseEntity<List<FormeGaleniqueDto>> recuperationDesMetadonnees(@RequestParam int page, @RequestParam int limit) {
-        return ResponseEntity.ok(formeGaleniqueService.recuperationDesMetadonnees(page, limit).getContent());
+        // Méthode non implémentée
+        return ResponseEntity.notFound().build(); // Retourne 404 Not Found pour cette méthode non implémentée
     }
 }

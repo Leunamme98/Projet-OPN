@@ -2,6 +2,7 @@ package com.officePharmaceutiqueNationale.OPN.controller;
 
 import com.officePharmaceutiqueNationale.OPN.dto.SpecialitePharmaceutiqueDto;
 import com.officePharmaceutiqueNationale.OPN.sercice.SpecialitePharmaceutiqueService;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -9,7 +10,7 @@ import java.util.List;
 
 @RestController
 @CrossOrigin(origins = "*")
-@RequestMapping("/specialites-pharmaceutiques")
+@RequestMapping("/opn/api/specialites-pharmaceutiques")
 public class SpecialitePharmaceutiqueController {
 
     private final SpecialitePharmaceutiqueService specialiteService;
@@ -18,12 +19,16 @@ public class SpecialitePharmaceutiqueController {
         this.specialiteService = specialiteService;
     }
 
-    @PostMapping("/{idDci}")
+    @PostMapping
     public ResponseEntity<SpecialitePharmaceutiqueDto> enregistrerUneSpecialite(
-            @RequestBody SpecialitePharmaceutiqueDto specialiteDto,
-            @PathVariable String idDci) {
+            @RequestBody SpecialitePharmaceutiqueDto specialiteDto) {
 
-        SpecialitePharmaceutiqueDto savedSpecialite = specialiteService.enregistrerUneSpecialite(specialiteDto, idDci);
+        if (specialiteDto.getDci() != null && specialiteDto.getDci().getId() != null) {
+            // Enregistrer la spécialité avec le DCI associé
+            specialiteDto.getDci().setId(specialiteDto.getDci().getId());
+        }
+
+        SpecialitePharmaceutiqueDto savedSpecialite = specialiteService.enregistrerUneSpecialite(specialiteDto);
         return ResponseEntity.status(201).body(savedSpecialite);
     }
 
@@ -51,4 +56,19 @@ public class SpecialitePharmaceutiqueController {
         return ResponseEntity.ok(specialiteDto);
     }
 
+
+    @GetMapping("/page")
+    public ResponseEntity<Page<SpecialitePharmaceutiqueDto>> recuperationParPagination(
+            @RequestParam int page, @RequestParam int limit) {
+        Page<SpecialitePharmaceutiqueDto> specialitePage = specialiteService.recuperationParPagination(page, limit);
+        return ResponseEntity.ok(specialitePage);
+    }
+
+    // Méthode non implémentée pour les métadonnées
+    @GetMapping("/metadonnees")
+    public ResponseEntity<Page<SpecialitePharmaceutiqueDto>> recuperationDesMetadonnees(
+            @RequestParam int page, @RequestParam int limit) {
+        // Implémentation spécifique selon vos besoins
+        throw new UnsupportedOperationException("Méthode recuperationDesMetadonnees non implémentée");
+    }
 }

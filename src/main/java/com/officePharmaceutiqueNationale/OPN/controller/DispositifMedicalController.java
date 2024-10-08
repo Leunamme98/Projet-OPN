@@ -7,10 +7,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import jakarta.validation.Valid;
 import java.util.List;
 
 @RestController
-@RequestMapping("/dispositifs-medicauxs")
+@RequestMapping("/opn/api/dispositifs-medicaux")
 @CrossOrigin(origins = "*")
 public class DispositifMedicalController {
 
@@ -21,13 +22,13 @@ public class DispositifMedicalController {
     }
 
     @PostMapping
-    public ResponseEntity<DispositifMedicalDto> enregistrerDispositifMedical(@RequestBody DispositifMedicalDto dto) {
+    public ResponseEntity<DispositifMedicalDto> enregistrerDispositifMedical(@Valid @RequestBody DispositifMedicalDto dto) {
         DispositifMedicalDto createdDto = dispositifMedicalService.enregistrerUnDispositifMedical(dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdDto);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<DispositifMedicalDto> modifierDispositifMedical(@RequestBody DispositifMedicalDto dto) {
+    @PutMapping
+    public ResponseEntity<DispositifMedicalDto> modifierDispositifMedical(@Valid @RequestBody DispositifMedicalDto dto) {
         DispositifMedicalDto updatedDto = dispositifMedicalService.modifierUnDispositifMedical(dto);
         return ResponseEntity.ok(updatedDto);
     }
@@ -46,13 +47,24 @@ public class DispositifMedicalController {
 
     @GetMapping
     public ResponseEntity<List<DispositifMedicalDto>> recupererTousLesDispositifsMedicaux() {
-        List<DispositifMedicalDto> dispositifsMedicaux = dispositifMedicalService.recupererLesDispositifMedicaux();
+        List<DispositifMedicalDto> dispositifsMedicaux = dispositifMedicalService.recupererLesDispositifsMedicaux();
         return ResponseEntity.ok(dispositifsMedicaux);
     }
 
-    @GetMapping("/page")
+    @GetMapping("/pagination")
     public ResponseEntity<Page<DispositifMedicalDto>> recuperationParPagination(@RequestParam int page, @RequestParam int limit) {
+
+        if (page < 0 || limit <= 0) {
+            return ResponseEntity.badRequest().build();
+        }
+
         Page<DispositifMedicalDto> dispositifsMedicauxPage = dispositifMedicalService.recuperationParPagination(page, limit);
         return ResponseEntity.ok(dispositifsMedicauxPage);
+    }
+
+    @GetMapping("/metadonnees")
+    public ResponseEntity<Page<DispositifMedicalDto>> recuperationDesMetadonnees(@RequestParam int page, @RequestParam int limit) {
+        Page<DispositifMedicalDto> metadonnees = dispositifMedicalService.recuperationDesMetadonnees(page, limit);
+        return ResponseEntity.ok(metadonnees);
     }
 }

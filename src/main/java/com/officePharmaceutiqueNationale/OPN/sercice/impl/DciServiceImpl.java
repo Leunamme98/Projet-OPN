@@ -5,6 +5,8 @@ import com.officePharmaceutiqueNationale.OPN.mapper.DciMapper;
 import com.officePharmaceutiqueNationale.OPN.model.Dci;
 import com.officePharmaceutiqueNationale.OPN.repository.DciRepository;
 import com.officePharmaceutiqueNationale.OPN.sercice.DciService;
+import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
@@ -12,9 +14,9 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
+@Transactional
 public class DciServiceImpl implements DciService {
 
     private final DciRepository dciRepository;
@@ -25,59 +27,91 @@ public class DciServiceImpl implements DciService {
         this.dciMapper = dciMapper;
     }
 
+    // Enregistrer un nouveau DCI
     @Override
-    public DciDto enregistrerUnDCI(DciDto dciDto) {
-        Dci dci = dciMapper.toEntity(dciDto);
+    public DciDto enregistrerUnDCI(@Valid DciDto dciDto) {
+        if (dciDto == null || dciDto.getNomDci() == null || dciDto.getNomDci().isBlank()) {
+            throw new IllegalArgumentException("Le DTO du DCI ne doit pas être nul et doit contenir un nom valide");
+        }
 
-        // Générer un identifiant unique avec UUID
-        dci.setId(UUID.randomUUID().toString());
+        // Génération de l'ID UUID
+        String id = UUID.randomUUID().toString();
+        Dci dci = dciMapper.toEntity(dciDto);
+        dci.setId(id);
+        dci.setIsDeleted(true);
 
         Dci savedDci = dciRepository.save(dci);
         return dciMapper.toDto(savedDci);
     }
 
+    // Modifier un dci existant
     @Override
-    public DciDto modifierUnDCI(DciDto dciDto) {
-        return dciMapper.toDto(dciRepository.save(dciMapper.toEntity(dciDto)));
-       }
+    public DciDto modifierUnDCI(@Valid DciDto dciDto) {
+        if (dciDto == null || dciDto.getId() == null || dciDto.getId().isBlank()) {
+            throw new IllegalArgumentException("Le DTO du DCI ne doit pas être nul et doit contenir un ID valide");
+        }
 
+        Dci existingDci = dciRepository.findById(dciDto.getId())
+                .orElseThrow(() -> new ResourceNotFoundException("DCI non trouvé avec l'ID : " + dciDto.getId()));
+
+        // Mise à jour des champs
+        existingDci.setNomDci(dciDto.getNomDci());
+        Dci updatedDci = dciRepository.save(existingDci);
+        return dciMapper.toDto(updatedDci);
+    }
+
+    // Supprimer un Dci
     @Override
     public void supprimerUnDCI(String id) {
-        // Recherche du DCI par ID
-        Dci dci = dciRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("DCI non trouvé avec l'ID : " + id));
+        if (id == null || id.isBlank()) {
+            throw new IllegalArgumentException("L'ID du DCI ne doit pas être nul ou vide");
+        }
 
-        // Vérification de l'état de suppression
-        if (dci.getIsDeleted()) {
+        Dci dci = dciRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("DCI non trouvé avec l'ID : " + id));
+
+        if (Boolean.TRUE.equals(dci.getIsDeleted())) {
             dciRepository.delete(dci);
         } else {
             throw new RuntimeException("Impossible de supprimer le DCI : " + id + " car il n'est pas marqué comme supprimé.");
         }
     }
 
+    // Récupérer un Dci par son id
     @Override
     public DciDto recupererDciParId(String idDci) {
-        return dciRepository.findById(idDci)
-                .map(dciMapper::toDto)
+        if (idDci == null || idDci.isBlank()) {
+            throw new IllegalArgumentException("L'ID du DCI ne peut pas être nul ou vide");
+        }
+
+        Dci dci = dciRepository.findById(idDci)
                 .orElseThrow(() -> new ResourceNotFoundException("DCI non trouvé avec l'ID : " + idDci));
+
+        return dciMapper.toDto(dci);
     }
 
+    // Récupérer tous les Dci
     @Override
     public List<DciDto> recupererLesDCI() {
-        return dciRepository.findAll().stream()
-                .map(dciMapper::toDto)
-                .collect(Collectors.toList());
+        List<Dci> dcis = dciRepository.findAll();
+        return dciMapper.toDtoList(dcis);
     }
 
+    // Récupérer les dci en faisant les paginations
     @Override
     public Page<DciDto> recuperationParPagination(int page, int limit) {
+        if (page < 0 || limit <= 0) {
+            throw new IllegalArgumentException("Les paramètres de pagination ne sont pas valides");
+        }
+
         return dciRepository.findAll(PageRequest.of(page, limit))
                 .map(dciMapper::toDto);
     }
 
+    // Récupérer les métadonnées
     @Override
     public Page<DciDto> recuperationDesMetadonnees(int page, int limit) {
-        return dciRepository.findAll(PageRequest.of(page, limit))
-                .map(dciMapper::toDto);
+        // Implémentation en attente
+        return null;
     }
 }

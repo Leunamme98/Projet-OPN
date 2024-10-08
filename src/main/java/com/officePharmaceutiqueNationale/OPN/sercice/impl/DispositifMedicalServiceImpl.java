@@ -1,128 +1,127 @@
 package com.officePharmaceutiqueNationale.OPN.sercice.impl;
 
+import com.officePharmaceutiqueNationale.OPN.exception.ResourceNotFoundException;
 import com.officePharmaceutiqueNationale.OPN.model.DispositifMedical;
 import com.officePharmaceutiqueNationale.OPN.dto.DispositifMedicalDto;
 import com.officePharmaceutiqueNationale.OPN.mapper.DispositifMedicalMapper;
 import com.officePharmaceutiqueNationale.OPN.repository.DispositifMedicalRepository;
 import com.officePharmaceutiqueNationale.OPN.sercice.DispositifMedicalService;
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional
 public class DispositifMedicalServiceImpl implements DispositifMedicalService {
 
-    private final DispositifMedicalRepository dispositifRepository;
-    private final DispositifMedicalMapper dispositifMapper;
+    private final DispositifMedicalRepository dispositifMedicalRepository;
+    private final DispositifMedicalMapper dispositifMedicalMapper;
 
-    public DispositifMedicalServiceImpl(DispositifMedicalRepository dispositifRepository, DispositifMedicalMapper dispositifMapper) {
-        this.dispositifRepository = dispositifRepository;
-        this.dispositifMapper = dispositifMapper;
+    public DispositifMedicalServiceImpl(DispositifMedicalRepository dispositifMedicalRepository, DispositifMedicalMapper dispositifMedicalMapper) {
+        this.dispositifMedicalRepository = dispositifMedicalRepository;
+        this.dispositifMedicalMapper = dispositifMedicalMapper;
     }
 
+    // Enregistrer un nouveau dispositif médical
     @Override
-    public DispositifMedicalDto enregistrerUnDispositifMedical(DispositifMedicalDto dto) {
+    public DispositifMedicalDto enregistrerUnDispositifMedical(DispositifMedicalDto dispositifMedicalDto) {
 
-        // Convertir le DTO en entité
-        DispositifMedical dispositifMedical = dispositifMapper.toEntity(dto);
+        // Vérification des données d'entrée
+        if (dispositifMedicalDto == null) {
+            throw new IllegalArgumentException("Les données du dispositif médical ne peuvent pas être nulles");
+        }
 
-        // Générer un ID unique pour le dispositif médical
-        dispositifMedical.setId(UUID.randomUUID().toString());
+        DispositifMedical dispositifMedical = dispositifMedicalMapper.toEntity(dispositifMedicalDto);
+        // Génération de l'id UUID
+        String id = UUID.randomUUID().toString();
+        dispositifMedical.setId(id);
 
-        // Enregistrer l'entité dans le repository
-        DispositifMedical dispositifEnregistre = dispositifRepository.save(dispositifMedical);
+        // Par défaut, isDeleted est à true
+        dispositifMedical.setIsDeleted(true);
 
-        // Convertir l'entité enregistrée en DTO et la retourner
-        return dispositifMapper.toDto(dispositifEnregistre);
+        DispositifMedical savedDispositif = dispositifMedicalRepository.save(dispositifMedical);
+        return dispositifMedicalMapper.toDto(savedDispositif);
     }
 
+    // Modifier un dispositif médical
     @Override
     public DispositifMedicalDto modifierUnDispositifMedical(DispositifMedicalDto dto) {
-
-        // Vérifier que l'ID du DTO n'est pas null ou vide
-        if (dto.getId() == null || dto.getId().isEmpty()) {
-            throw new IllegalArgumentException("L'ID du dispositif médical est requis pour la modification.");
+        if (dto == null || dto.getId() == null) {
+            throw new IllegalArgumentException("L'ID du dispositif médical ne peut pas être nul");
         }
 
-        // Récupérer le dispositif médical existant par son ID
-        DispositifMedical dispositifMedicalExistant = dispositifRepository.findById(dto.getId())
-                .orElseThrow(() -> new EntityNotFoundException("Dispositif médical avec ID " + dto.getId() + " non trouvé."));
+        DispositifMedical existingDispositif = dispositifMedicalRepository.findById(dto.getId())
+                .orElseThrow(() -> new ResourceNotFoundException("Dispositif médical non trouvé avec l'ID : " + dto.getId()));
 
-        // Mettre à jour les champs de l'entité à partir du DTO
-        dispositifMedicalExistant.setCode(dto.getCode());
-        dispositifMedicalExistant.setLibelle(dto.getLibelle());
-        dispositifMedicalExistant.setDateExpiration(dto.getDateExpiration());
-        dispositifMedicalExistant.setPrixGenerique(dto.getPrixGenerique());
-        dispositifMedicalExistant.setQuantiteStockSeuil(dto.getQuantiteStockSeuil());
-        dispositifMedicalExistant.setDescription(dto.getDescription());
-        dispositifMedicalExistant.setEtat(dto.getEtat());
-        dispositifMedicalExistant.setPaysFabrication(dto.getPaysFabrication());
+        existingDispositif.setCode(dto.getCode());
+        existingDispositif.setLibelle(dto.getLibelle());
+        existingDispositif.setDateExpiration(dto.getDateExpiration());
+        existingDispositif.setPrixGenerique(dto.getPrixGenerique());
+        existingDispositif.setQuantiteStockSeuil(dto.getQuantiteStockSeuil());
+        existingDispositif.setDescription(dto.getDescription());
+        existingDispositif.setCheminImage(dto.getCheminImage());
+        existingDispositif.setEtat(dto.getEtat());
+        existingDispositif.setPaysFabrication(dto.getPaysFabrication());
 
-        // Sauvegarder les modifications dans la base de données
-        DispositifMedical dispositifMedicalModifie = dispositifRepository.save(dispositifMedicalExistant);
-
-        // Convertir l'entité modifiée en DTO et la retourner
-        return dispositifMapper.toDto(dispositifMedicalModifie);
+        DispositifMedical updatedDispositif = dispositifMedicalRepository.save(existingDispositif);
+        return dispositifMedicalMapper.toDto(updatedDispositif);
     }
 
+    // Supprimer un dispositif médical existant
     @Override
     public void supprimerUnDispositifMedical(String idDispositif) {
-
-        // Vérifier que l'ID n'est pas null ou vide
-        if (idDispositif == null || idDispositif.isEmpty()) {
-            throw new IllegalArgumentException("L'ID du dispositif médical est requis pour la suppression.");
+        if (idDispositif == null) {
+            throw new IllegalArgumentException("L'ID du dispositif médical ne peut pas être nul");
         }
 
-        // Récupérer le dispositif médical existant par son ID
-        DispositifMedical dispositifMedicalExistant = dispositifRepository.findById(idDispositif)
-                .orElseThrow(() -> new EntityNotFoundException("Dispositif médical avec ID " + idDispositif + " non trouvé."));
+        DispositifMedical dispositifMedical = dispositifMedicalRepository.findById(idDispositif)
+                .orElseThrow(() -> new ResourceNotFoundException("Dispositif médical non trouvé avec l'ID : " + idDispositif));
 
-        // Supprimer le dispositif médical de la base de données
-        dispositifRepository.delete(dispositifMedicalExistant);
+        // Vérifier l'état de l'attribut isDeleted
+        if (Boolean.FALSE.equals(dispositifMedical.getIsDeleted())) {
+            throw new IllegalStateException("Le dispositif médical ne peut être supprimé que si son état est marqué comme supprimé (isDeleted = true)");
+        }
+
+        dispositifMedicalRepository.delete(dispositifMedical);
     }
 
-
+    // Récupérer un dispositif médical par son ID
     @Override
     public DispositifMedicalDto recupererUnDispositifMedicalParId(String idDispositif) {
-
-        // Vérifier que l'ID n'est pas null ou vide
-        if (idDispositif == null || idDispositif.isEmpty()) {
-            throw new IllegalArgumentException("L'ID du dispositif médical est requis.");
+        if (idDispositif == null) {
+            throw new IllegalArgumentException("L'ID du dispositif médical ne peut pas être nul");
         }
 
-        // Récupérer le dispositif médical existant par son ID
-        DispositifMedical dispositifMedical = dispositifRepository.findById(idDispositif)
-                .orElseThrow(() -> new EntityNotFoundException("Dispositif médical avec ID " + idDispositif + " non trouvé."));
+        DispositifMedical dispositifMedical = dispositifMedicalRepository.findById(idDispositif)
+                .orElseThrow(() -> new ResourceNotFoundException("Dispositif médical non trouvé avec l'ID : " + idDispositif));
 
-        // Convertir l'entité en DTO et retourner le DTO
-        return dispositifMapper.toDto(dispositifMedical);
+        return dispositifMedicalMapper.toDto(dispositifMedical);
     }
 
+    // Récupérer tous les dispositifs médicaux
     @Override
-    public List<DispositifMedicalDto> recupererLesDispositifMedicaux() {
-        // Récupérer toutes les entités DispositifMedical
-        List<DispositifMedical> dispositifsMedicaux = dispositifRepository.findAll();
-
-        // Convertir la liste d'entités en liste de DTOs
-        return dispositifsMedicaux.stream()
-                .map(dispositifMapper::toDto)
-                .collect(Collectors.toList());
+    public List<DispositifMedicalDto> recupererLesDispositifsMedicaux() {
+        List<DispositifMedical> dispositifs = dispositifMedicalRepository.findAll();
+        return dispositifMedicalMapper.toDtoList(dispositifs);
     }
 
+    // Faire la pagination
     @Override
     public Page<DispositifMedicalDto> recuperationParPagination(int page, int limit) {
-        // Récupérer la page de dispositifs médicaux
-        Page<DispositifMedical> dispositifsMedicauxPage = dispositifRepository.findAll(PageRequest.of(page, limit));
-
-        // Convertir la page d'entités en page de DTOs
-        return dispositifsMedicauxPage.map(dispositifMapper::toDto);
+        Pageable pageable = PageRequest.of(page, limit);
+        Page<DispositifMedical> dispositifsPage = dispositifMedicalRepository.findAll(pageable);
+        return dispositifsPage.map(dispositifMedicalMapper::toDto);
     }
 
+    // Récupérer les métadonnées
+    @Override
+    public Page<DispositifMedicalDto> recuperationDesMetadonnees(int page, int limit) {
+        // Méthode non implémentée
+        return null;
+    }
 }

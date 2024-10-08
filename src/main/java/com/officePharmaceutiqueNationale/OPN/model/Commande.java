@@ -17,18 +17,11 @@ public class Commande {
 
     private EtatCommande etatCommande;
 
-    @OneToMany(mappedBy = "commande")
-    private List<LigneCommande> ligneCommandes;
 
     @ManyToOne
     private Client client;
 
-    @OneToMany(mappedBy = "commande")
-    private List<Reclamation> reclamations;
-
     @OneToOne
     private Facture facture;
 
-    @OneToMany(mappedBy = "commande")
-    private List<Livraison> livraisons;
 }

@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
 
 @Entity
 @Data @AllArgsConstructor @NoArgsConstructor
@@ -12,8 +11,10 @@ public class SpecialitePharmaceutique {
 
     @Id
     private String id;
+
     private String libelleSpecialiteMedicament;
     private String nomLaboratoire;
+    private Boolean isDeleted;
 
     @ManyToOne
     private Dci dci;

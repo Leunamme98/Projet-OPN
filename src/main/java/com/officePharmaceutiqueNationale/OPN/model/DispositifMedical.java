@@ -9,5 +9,7 @@ import lombok.Setter;
 @DiscriminatorValue("Dispositif Médical")
 @Getter @Setter
 public class DispositifMedical extends Article {
+
     private String paysFabrication;
+
 }

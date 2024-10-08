@@ -1,21 +1,13 @@
 package com.officePharmaceutiqueNationale.OPN.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
-
-import java.time.LocalDate;
+import lombok.*;
 
 @Entity
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@EqualsAndHashCode(callSuper = true)
+@DiscriminatorValue("Agent")
+@Getter @Setter
 public class AgentOpn extends Utilisateur {
 
     private String matriculeAgent;
-    private LocalDate dateEmbauche;
 
 }

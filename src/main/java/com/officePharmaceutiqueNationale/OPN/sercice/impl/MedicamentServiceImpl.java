@@ -15,13 +15,11 @@ import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -52,6 +50,7 @@ public class MedicamentServiceImpl implements MedicamentService {
 
         // Création de l'entité Medicament avec l'ID généré
         Medicament medicament = medicamentMapper.toEntity(medicamentDto);
+
         medicament.setId(medicamentId);
 
         // Par défaut, isDeleted est défini à true

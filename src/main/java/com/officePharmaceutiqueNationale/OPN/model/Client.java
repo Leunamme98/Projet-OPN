@@ -1,17 +1,14 @@
 package com.officePharmaceutiqueNationale.OPN.model;
 
+import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
-import jakarta.persistence.OneToMany;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-import java.util.List;
+
 
 @Entity
-@Data @NoArgsConstructor @AllArgsConstructor
-@EqualsAndHashCode(callSuper = true)
+@DiscriminatorValue("Client")
+@Getter @Setter
 public class Client extends Utilisateur {
 
     private String nomEntreprise;
@@ -20,9 +17,4 @@ public class Client extends Utilisateur {
     private String nomDuResponsable;
     private String numeroContactResponsable;
 
-    @OneToMany(mappedBy = "client")
-    private List<Panier> paniers;
-
-    @OneToMany
-    private List<Commande> commandes;
 }

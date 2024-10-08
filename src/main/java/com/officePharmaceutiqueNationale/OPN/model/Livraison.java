@@ -23,7 +23,4 @@ public class Livraison {
     @ManyToOne
     private Commande commande;
 
-    @OneToMany(mappedBy = "livraison")
-    private List<LigneLivraison> ligneLivraisons;
-
 }
