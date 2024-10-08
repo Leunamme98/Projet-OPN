@@ -11,12 +11,15 @@ import com.officePharmaceutiqueNationale.OPN.repository.MedicamentRepository;
 import com.officePharmaceutiqueNationale.OPN.repository.SpecialitePharmaceutiqueRepository;
 import com.officePharmaceutiqueNationale.OPN.sercice.MedicamentService;
 import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -36,40 +39,60 @@ public class MedicamentServiceImpl implements MedicamentService {
         this.specialitePharmaceutiqueRepository = specialitePharmaceutiqueRepository;
     }
 
+    // Enregistrer un nouveau médicament
     @Override
-    public MedicamentDto enregistrerUnMedicament(MedicamentDto medicamentDto, String idFormeGalenique, String idSpecialitePharmaceutique) {
+    public MedicamentDto enregistrerUnMedicament(@Valid MedicamentDto medicamentDto) {
 
-        // Vérification des entrées
-        if (medicamentDto == null || idFormeGalenique == null || idSpecialitePharmaceutique == null) {
-            throw new IllegalArgumentException("Les informations du médicament et des identifiants ne doivent pas être nulles.");
+        if (medicamentDto == null ) {
+            throw new IllegalArgumentException("Le DTO du médicament ne doit pas être nul");
         }
 
-        // Mapping du DTO vers l'entité
+        // Génération du UUID pour l'ID du médicament
+        String medicamentId = UUID.randomUUID().toString();
+
+        // Création de l'entité Medicament avec l'ID généré
         Medicament medicament = medicamentMapper.toEntity(medicamentDto);
+        medicament.setId(medicamentId);
 
-        // Génération d'un ID pour le médicament
-        medicament.setId(UUID.randomUUID().toString());
+        // Par défaut, isDeleted est défini à true
+        medicament.setIsDeleted(true);
 
-        // Récupération et validation de la forme galénique
-        FormeGalenique formeGalenique = formeGaleniqueRepository.findById(idFormeGalenique)
-                .orElseThrow(() -> new ResourceNotFoundException("Forme galénique non trouvée pour l'ID : " + idFormeGalenique));
+        // Vérifier si la spécialité pharmaceutique est présente
+        if (medicamentDto.getSpecialitePharmaceutique() != null && medicamentDto.getSpecialitePharmaceutique().getId() != null) {
+            Optional<SpecialitePharmaceutique> optionalSpecialite = specialitePharmaceutiqueRepository.findById(medicamentDto.getSpecialitePharmaceutique().getId());
+            SpecialitePharmaceutique specialite = optionalSpecialite.orElseThrow(() ->
+                    new IllegalArgumentException("Spécialité pharmaceutique avec l'ID " + medicamentDto.getSpecialitePharmaceutique().getId() + " n'existe pas.")
+            );
 
-        // Récupération et validation de la spécialité pharmaceutique
-        SpecialitePharmaceutique specialitePharmaceutique = specialitePharmaceutiqueRepository.findById(idSpecialitePharmaceutique)
-                .orElseThrow(() -> new ResourceNotFoundException("Spécialité pharmaceutique non trouvée pour l'ID : " + idSpecialitePharmaceutique));
+            // Mettre à jour l'attribut isDeleted de la spécialité à false pour empêcher sa suppression
+            specialite.setIsDeleted(false);
+            specialitePharmaceutiqueRepository.save(specialite);
 
-        // Association des entités avec le médicament
-        medicament.setFormeGalenique(formeGalenique);
-        medicament.setSpecialitePharmaceutique(specialitePharmaceutique);
+            medicament.setSpecialitePharmaceutique(specialite);
+        }
 
-        // Enregistrement dans la base de données
-        Medicament medicamentEnregistre = medicamentRepository.save(medicament);
+        // Vérifier si la forme galénique est présente
+        if (medicamentDto.getFormeGalenique() != null && medicamentDto.getFormeGalenique().getId() != null) {
+            Optional<FormeGalenique> optionalFormeGalenique = formeGaleniqueRepository.findById(medicamentDto.getFormeGalenique().getId());
+            FormeGalenique formeGalenique = optionalFormeGalenique.orElseThrow(() ->
+                    new IllegalArgumentException("Forme galénique avec l'ID " + medicamentDto.getFormeGalenique().getId() + " n'existe pas.")
+            );
 
-        // Retour du DTO correspondant
-        return medicamentMapper.toDto(medicamentEnregistre);
+            // Mettre à jour l'attribut isDeleted de la forme galénique à false
+            formeGalenique.setIsDeleted(false);
+            formeGaleniqueRepository.save(formeGalenique);
+
+            medicament.setFormeGalenique(formeGalenique);
+        }
+
+        // Sauvegarder l'entité médicament dans le repository
+        Medicament savedMedicament = medicamentRepository.save(medicament);
+
+        // Retourner le DTO correspondant
+        return medicamentMapper.toDto(savedMedicament);
     }
 
-
+    // Modifier un medicament
     @Override
     public MedicamentDto modifierUnMedicament(MedicamentDto medicamentDto) {
         // Vérification de l'ID
@@ -77,83 +100,105 @@ public class MedicamentServiceImpl implements MedicamentService {
             throw new IllegalArgumentException("L'ID du médicament ne peut pas être nul.");
         }
 
-        // Récupération du médicament existant à partir de l'ID
-        Medicament medicamentExistant = medicamentRepository.findById(medicamentDto.getId())
-                .orElseThrow(() -> new ResourceNotFoundException("Médicament non trouvé pour l'ID : " + medicamentDto.getId()));
+        // Récupérer l'entité existante
+        Medicament existingMedicament = medicamentRepository.findById(medicamentDto.getId())
+                .orElseThrow(() -> new ResourceNotFoundException("Médicament non trouvé avec l'ID : " + medicamentDto.getId()));
 
-        // Mise à jour des attributs
-        medicamentExistant.setCode(medicamentDto.getCode());
-        medicamentExistant.setLibelle(medicamentDto.getLibelle());
-        medicamentExistant.setDateExpiration(medicamentDto.getDateExpiration());
-        medicamentExistant.setPrixGenerique(medicamentDto.getPrixGenerique());
-        medicamentExistant.setQuantiteStockSeuil(medicamentDto.getQuantiteStockSeuil());
-        medicamentExistant.setDescription(medicamentDto.getDescription());
-        medicamentExistant.setEtat(medicamentDto.getEtat());
-        medicamentExistant.setConcentration(medicamentDto.getConcentration());
-        medicamentExistant.setUniteConcentration(medicamentDto.getUniteConcentration());
+        // Mettre à jour les champs de l'entité
+        existingMedicament.setCode(medicamentDto.getCode());
+        existingMedicament.setLibelle(medicamentDto.getLibelle());
+        existingMedicament.setDateExpiration(medicamentDto.getDateExpiration());
+        existingMedicament.setPrixGenerique(medicamentDto.getPrixGenerique());
+        existingMedicament.setQuantiteStockSeuil(medicamentDto.getQuantiteStockSeuil());
+        existingMedicament.setDescription(medicamentDto.getDescription());
+        existingMedicament.setCheminImage(medicamentDto.getCheminImage());
+        existingMedicament.setEtat(medicamentDto.getEtat());
+        existingMedicament.setConcentration(medicamentDto.getConcentration());
+        existingMedicament.setUniteConcentration(medicamentDto.getUniteConcentration());
 
-        // Récupération et mise à jour des relations (forme galénique et spécialité pharmaceutique)
+        // Mettre à jour forme galénique (si non nulle et valide)
         if (medicamentDto.getFormeGalenique() != null && medicamentDto.getFormeGalenique().getId() != null) {
-            FormeGalenique formeGalenique = formeGaleniqueRepository.findById(medicamentDto.getFormeGalenique().getId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Forme galénique non trouvée pour l'ID : " + medicamentDto.getFormeGalenique().getId()));
-            medicamentExistant.setFormeGalenique(formeGalenique);
+            Optional<FormeGalenique> optionalForme = formeGaleniqueRepository.findById(medicamentDto.getFormeGalenique().getId());
+            FormeGalenique formeGalenique = optionalForme.orElseThrow(() ->
+                    new ResourceNotFoundException("Forme galénique non trouvée avec l'ID : " + medicamentDto.getFormeGalenique().getId())
+            );
+            existingMedicament.setFormeGalenique(formeGalenique);
+        } else {
+            existingMedicament.setFormeGalenique(null);
         }
 
+        // Mettre à jour spécialité pharmaceutique (si non nulle et valide)
         if (medicamentDto.getSpecialitePharmaceutique() != null && medicamentDto.getSpecialitePharmaceutique().getId() != null) {
-            SpecialitePharmaceutique specialitePharmaceutique = specialitePharmaceutiqueRepository.findById(medicamentDto.getSpecialitePharmaceutique().getId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Spécialité pharmaceutique non trouvée pour l'ID : " + medicamentDto.getSpecialitePharmaceutique().getId()));
-            medicamentExistant.setSpecialitePharmaceutique(specialitePharmaceutique);
+            Optional<SpecialitePharmaceutique> optionalSpecialite = specialitePharmaceutiqueRepository.findById(medicamentDto.getSpecialitePharmaceutique().getId());
+            SpecialitePharmaceutique specialite = optionalSpecialite.orElseThrow(() ->
+                    new ResourceNotFoundException("Spécialité pharmaceutique non trouvée avec l'ID : " + medicamentDto.getSpecialitePharmaceutique().getId())
+            );
+            existingMedicament.setSpecialitePharmaceutique(specialite);
+        } else {
+            existingMedicament.setSpecialitePharmaceutique(null);
         }
 
-        // Sauvegarde des modifications dans la base de données
-        Medicament medicamentMisAJour = medicamentRepository.save(medicamentExistant);
+        // Sauvegarder les modifications
+        Medicament updatedMedicament = medicamentRepository.save(existingMedicament);
 
-        // Retour du DTO correspondant à l'entité mise à jour
-        return medicamentMapper.toDto(medicamentMisAJour);
+        // Mapper vers le DTO
+        return medicamentMapper.toDto(updatedMedicament);
     }
 
-
+    // Supprimer un médicament
     @Override
     public void supprimerUnMedicament(String idMedicament) {
-        // Vérification de l'existence du médicament
-        Medicament medicament = medicamentRepository.findById(idMedicament)
-                .orElseThrow(() -> new ResourceNotFoundException("Médicament non trouvé pour l'ID : " + idMedicament));
+        if (idMedicament == null) {
+            throw new IllegalArgumentException("L'ID du médicament ne peut pas être nul");
+        }
 
-        // Suppression du médicament
+        // Récupérer l'entité existante
+        Medicament medicament = medicamentRepository.findById(idMedicament)
+                .orElseThrow(() -> new ResourceNotFoundException("Médicament non trouvé avec l'ID : " + idMedicament));
+
+        // Vérifier l'état de l'attribut isDeleted
+        if (Boolean.FALSE.equals(medicament.getIsDeleted())) {
+            throw new IllegalStateException("Le médicament ne peut être supprimé que si son état est marqué comme supprimé (isDeleted = true)");
+        }
+
+        // Supprimer l'entité
         medicamentRepository.delete(medicament);
     }
 
+    // Récuperer un médicament existant par son id
     @Override
     public MedicamentDto recupererUnMedicamentParId(String idMedicament) {
-        // Récupération du médicament depuis la base de données
-        Medicament medicament = medicamentRepository.findById(idMedicament)
-                .orElseThrow(() -> new ResourceNotFoundException("Médicament non trouvé pour l'ID : " + idMedicament));
+        if (idMedicament == null) {
+            throw new IllegalArgumentException("L'ID du médicament ne peut pas être nul");
+        }
 
-        // Conversion en DTO et retour
+        // Récupérer l'entité
+        Medicament medicament = medicamentRepository.findById(idMedicament)
+                .orElseThrow(() -> new ResourceNotFoundException("Médicament non trouvé avec l'ID : " + idMedicament));
+
+        // Mapper vers le DTO
         return medicamentMapper.toDto(medicament);
     }
 
+    // Récupérer la liste des médicaments
     @Override
     public List<MedicamentDto> recupererLesMedicaments() {
-        // Récupération de la liste de tous les médicaments
         List<Medicament> medicaments = medicamentRepository.findAll();
-
-        // Conversion de la liste d'entités en liste de DTO
-        return medicaments.stream()
-                .map(medicamentMapper::toDto)
-                .collect(Collectors.toList());
+        return medicamentMapper.toDtoList(medicaments);
     }
 
+    // Faire la pagination
     @Override
     public Page<MedicamentDto> recuperationParPagination(int page, int limit) {
-        // Création d'un objet Pageable pour la pagination
         Pageable pageable = PageRequest.of(page, limit);
-
-        // Récupération des médicaments avec pagination
         Page<Medicament> medicamentsPage = medicamentRepository.findAll(pageable);
-
-        // Conversion de la page d'entités en page de DTO
         return medicamentsPage.map(medicamentMapper::toDto);
+    }
+
+    // Récupérer les métadonnées
+    @Override
+    public Page<MedicamentDto> recuperationDesMetadonnees(int page, int limit) {
+        return null;
     }
 
 }
