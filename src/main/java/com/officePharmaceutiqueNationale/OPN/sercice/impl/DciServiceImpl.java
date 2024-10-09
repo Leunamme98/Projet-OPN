@@ -36,7 +36,9 @@ public class DciServiceImpl implements DciService {
 
         // Génération de l'ID UUID
         String id = UUID.randomUUID().toString();
+
         Dci dci = dciMapper.toEntity(dciDto);
+
         dci.setId(id);
         dci.setIsDeleted(true);
 
@@ -56,6 +58,7 @@ public class DciServiceImpl implements DciService {
 
         // Mise à jour des champs
         existingDci.setNomDci(dciDto.getNomDci());
+
         Dci updatedDci = dciRepository.save(existingDci);
         return dciMapper.toDto(updatedDci);
     }

@@ -1,7 +1,6 @@
 package com.officePharmaceutiqueNationale.OPN.model;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Email;
 import lombok.Data;
 
 @Entity
@@ -15,18 +14,15 @@ public abstract class Utilisateur {
 
     private String identifiant;
 
-    private String nomComplet;
-
     private String adresse;
 
     private String numeroTelephone;
 
-    @Email(message = "Email invalide")
     private String email;
 
-    private String motDePasse;
+    private String motDePasseHache;
 
     private String cheminPhoto;
 
-    private String urlPhoto;
+    private Boolean isDeleted;
 }

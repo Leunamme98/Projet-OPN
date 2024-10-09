@@ -97,6 +97,15 @@
 			<version>1.5.5.Final</version>
 		</dependency>
 
+		<!-- Dépendances pour Spring boot Security Core -->
+		<!-- https://mvnrepository.com/artifact/org.springframework.security/spring-security-core -->
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-core</artifactId>
+			<version>6.3.3</version>
+		</dependency>
+
+
 	</dependencies>
 
 	<build>
