@@ -26,7 +26,6 @@ public class AgentOpnDto {
 
     private String motDePasse;
 
-    @NotBlank(message = "Le chemin de la photo ne peut pas être vide")
     private String cheminPhoto;
 
     @NotBlank(message = "Le matricule ne peut pas être vide")
@@ -40,4 +39,5 @@ public class AgentOpnDto {
 
     private Boolean isDeleted;
 
+    private Boolean isActive;
 }

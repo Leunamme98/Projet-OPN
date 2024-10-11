@@ -114,6 +114,7 @@ public class MedicamentServiceImpl implements MedicamentService {
         existingMedicament.setEtat(medicamentDto.getEtat());
         existingMedicament.setConcentration(medicamentDto.getConcentration());
         existingMedicament.setUniteConcentration(medicamentDto.getUniteConcentration());
+        existingMedicament.setQuantiteStock(medicamentDto.getQuantiteStock());
 
         // Mettre à jour forme galénique (si non nulle et valide)
         if (medicamentDto.getFormeGalenique() != null && medicamentDto.getFormeGalenique().getId() != null) {

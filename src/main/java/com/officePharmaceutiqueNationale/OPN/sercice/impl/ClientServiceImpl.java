@@ -40,6 +40,7 @@ public class ClientServiceImpl implements ClientService {
         // Définir l'ID généré et marquer le client comme pouvant être supprimé
         client.setId(generatedId);
         client.setIsDeleted(true);
+        client.setIsActive(false);
 
         // Vérifier que le mot de passe est fourni
         if (clientDto.getMotDePasse() == null || clientDto.getMotDePasse().isEmpty()) {
@@ -80,6 +81,7 @@ public class ClientServiceImpl implements ClientService {
         clientExist.setTypeStructure(clientDto.getTypeStructure());
         clientExist.setNomDuResponsable(clientDto.getNomDuResponsable());
         clientExist.setNumeroContactResponsable(clientDto.getNumeroContactResponsable());
+        clientExist.setIsActive(clientDto.getIsActive());
 
         // Enregistrer les modifications dans la base de données
         Client updatedClient = clientRepository.save(clientExist);

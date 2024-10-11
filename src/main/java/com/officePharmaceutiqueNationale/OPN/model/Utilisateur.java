@@ -25,4 +25,6 @@ public abstract class Utilisateur {
     private String cheminPhoto;
 
     private Boolean isDeleted;
+
+    private Boolean isActive;
 }

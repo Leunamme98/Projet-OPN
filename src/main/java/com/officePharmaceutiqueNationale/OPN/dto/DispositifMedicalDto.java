@@ -32,6 +32,10 @@ public class DispositifMedicalDto {
     @Min(value = 0, message = "La quantité de stock seuil doit être non négative")
     private int quantiteStockSeuil;
 
+    @NotNull(message = "La quantité de stock ne peut pas être nulle")
+    @Min(value = 0, message = "La quantité de stock doit être non négative")
+    private int quantiteStock;
+
     private String description;
 
     private String cheminImage;

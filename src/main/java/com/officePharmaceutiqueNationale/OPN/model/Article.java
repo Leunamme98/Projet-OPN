@@ -18,6 +18,7 @@ public abstract class Article {
     private LocalDate dateExpiration;
     private Double prixGenerique;
     private int quantiteStockSeuil;
+    private int quantiteStock;
     private String description;
     private String cheminImage;
 

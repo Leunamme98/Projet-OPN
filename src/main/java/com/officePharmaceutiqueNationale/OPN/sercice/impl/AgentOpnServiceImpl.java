@@ -41,6 +41,7 @@ public class AgentOpnServiceImpl implements AgentOpnService {
         // Définir l'ID généré et marquer l'agent comme pouvant être supprimé
         agentOpn.setId(generatedId);
         agentOpn.setIsDeleted(true);
+        agentOpn.setIsActive(false);
 
         // Vérifier que le mot de passe est fourni
         if (agentOpnDto.getMotDePasse() == null || agentOpnDto.getMotDePasse().isEmpty()) {
@@ -79,8 +80,7 @@ public class AgentOpnServiceImpl implements AgentOpnService {
         agentOpnExist.setMatriculeAgent(agentOpnDto.getMatriculeAgent());
         agentOpnExist.setNomAgent(agentOpnDto.getNomAgent());
         agentOpnExist.setPrenomAgent(agentOpnDto.getPrenomAgent());
-
-        // Note: on ne change pas le mot de passe ni isDeleted
+        agentOpnExist.setIsActive(agentOpnDto.getIsActive());
 
         // Enregistrer les modifications dans la base de données
         AgentOpn updatedAgent = agentOpnRepository.save(agentOpnExist);

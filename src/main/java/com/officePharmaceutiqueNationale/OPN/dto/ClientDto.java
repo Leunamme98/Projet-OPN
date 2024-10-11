@@ -28,7 +28,6 @@ public class ClientDto {
     @Size(min = 8, message = "Le mot de passe doit contenir au moins 8 caractères")
     private String motDePasse;
 
-    @NotBlank(message = "Le chemin de la photo ne peut pas être vide")
     private String cheminPhoto;
 
     @NotBlank(message = "Le nom de l'entreprise ne peut pas être vide")
@@ -48,4 +47,6 @@ public class ClientDto {
     private String numeroContactResponsable;
 
     private Boolean isDeleted;
+
+    private Boolean isActive;
 }
