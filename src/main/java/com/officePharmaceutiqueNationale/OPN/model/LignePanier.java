@@ -2,6 +2,7 @@ package com.officePharmaceutiqueNationale.OPN.model;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -17,6 +18,7 @@ public class LignePanier {
     private int quantite;
 
     @ManyToOne
+    @JoinColumn(name="panier_id")
     private Panier panier;
 
     @ManyToOne

@@ -15,6 +15,7 @@ public class Panier {
     private String id;
 
     @ManyToOne
+    @JoinColumn(name="client_id")
     private Client client;
 
     @OneToMany(mappedBy = "panier")

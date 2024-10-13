@@ -1,6 +1,7 @@
 package com.officePharmaceutiqueNationale.OPN.model;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -20,6 +21,7 @@ public class LigneCommande {
     private Article article;
 
      @ManyToOne
+     @JoinColumn(name="commande_id")
     private Commande commande;
 
      private Boolean isDeleted;

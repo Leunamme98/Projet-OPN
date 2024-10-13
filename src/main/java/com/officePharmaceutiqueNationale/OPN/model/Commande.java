@@ -19,6 +19,7 @@ public class Commande {
 
 
     @ManyToOne
+    @JoinColumn(name="client_id")
     private Client client;
 
     @OneToOne
