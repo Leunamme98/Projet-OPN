@@ -21,4 +21,7 @@ public class LigneCommande {
 
      @ManyToOne
     private Commande commande;
+
+     private Boolean isDeleted;
+
 }

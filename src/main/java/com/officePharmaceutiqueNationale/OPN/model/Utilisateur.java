@@ -7,7 +7,7 @@ import lombok.Data;
 @Inheritance(strategy = InheritanceType.JOINED)
 @DiscriminatorColumn(name = "Utilisateur_type")
 @Data
-public abstract class Utilisateur {
+public class Utilisateur {
 
     @Id
     private String id;

@@ -8,7 +8,7 @@ import java.time.LocalDate;
 @Inheritance(strategy = InheritanceType.JOINED)
 @DiscriminatorColumn(name = "Article_type")
 @Data
-public abstract class Article {
+public  class Article {
 
     @Id
     private String id;
