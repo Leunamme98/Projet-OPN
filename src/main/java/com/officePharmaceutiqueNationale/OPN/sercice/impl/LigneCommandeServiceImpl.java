@@ -35,7 +35,7 @@ public class LigneCommandeServiceImpl implements LigneCommandeService {
 
     // Créer une nouvelle ligne de commande
     @Override
-    public LigneCommandeDto creerLigneCommande(LigneCommandeDto ligneCommandeDto, String commandeId) {
+    public LigneCommandeDto creerLigneCommande(LigneCommandeDto ligneCommandeDto,String commandeId) {
         LigneCommande ligneCommande = ligneCommandeMapper.toEntity(ligneCommandeDto);
         ligneCommande.setCommande(commandeRepository.findById(commandeId)
                 .orElseThrow(() -> new ResourceNotFoundException("Commande non trouvée")));
@@ -114,6 +114,8 @@ public class LigneCommandeServiceImpl implements LigneCommandeService {
 
         // Sauvegarder la LigneCommande
         ligneCommandeRepository.save(ligneCommande);
+        // Mettre à jour le montant total de la commande après avoir ajouté la ligne de commande
+        commandeService.mettreAJourMontantTotalCommande(commandeId);
     }
 
 

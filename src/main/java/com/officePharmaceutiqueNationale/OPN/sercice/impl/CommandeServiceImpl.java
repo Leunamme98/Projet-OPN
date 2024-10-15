@@ -8,6 +8,7 @@ import com.officePharmaceutiqueNationale.OPN.mapper.CommandeMapper;
 import com.officePharmaceutiqueNationale.OPN.model.Commande;
 import com.officePharmaceutiqueNationale.OPN.model.EtatCommande;
 import com.officePharmaceutiqueNationale.OPN.repository.CommandeRepository;
+import com.officePharmaceutiqueNationale.OPN.repository.LigneCommandeRepository;
 import com.officePharmaceutiqueNationale.OPN.sercice.CommandeService;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
@@ -27,12 +28,14 @@ import java.util.UUID;
 public class CommandeServiceImpl implements CommandeService {
 
     private final CommandeRepository commandeRepository;
+    private final LigneCommandeRepository ligneCommandeRepository;
     private final CommandeMapper commandeMapper;
     private static final Random RANDOM = new Random();
 
-    public CommandeServiceImpl(CommandeRepository commandeRepository, CommandeMapper commandeMapper) {
+    public CommandeServiceImpl(CommandeRepository commandeRepository, CommandeMapper commandeMapper,LigneCommandeRepository ligneCommandeRepository) {
         this.commandeRepository = commandeRepository;
         this.commandeMapper = commandeMapper;
+        this.ligneCommandeRepository = ligneCommandeRepository;
     }
 
     // Créer une nouvelle commande
@@ -104,6 +107,20 @@ public class CommandeServiceImpl implements CommandeService {
 
         Commande updatedCommande = commandeRepository.save(commande);
         return commandeMapper.toDto(updatedCommande);
+    }
+
+    // Recalculer le montant total de la commande après l'ajout des lignes de commande
+    public void mettreAJourMontantTotalCommande(String commandeId) {
+        Commande commande = commandeRepository.findById(commandeId)
+                .orElseThrow(() -> new ResourceNotFoundException("Commande non trouvée avec l'ID : " + commandeId));
+
+        // Calculer le montant total à partir des lignes de commande associées
+        Double montantTotal = ligneCommandeRepository.findByCommandeId(commandeId).stream()
+                .mapToDouble(ligne -> ligne.getQuantiteLigneCommande() * ligne.getPrixLigneCommande())
+                .sum();
+
+        commande.setMontantTotalCommande(montantTotal);
+        commandeRepository.save(commande);
     }
 
     // Supprimer une commande par son ID
