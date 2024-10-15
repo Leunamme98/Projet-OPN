@@ -12,9 +12,15 @@ import com.officePharmaceutiqueNationale.OPN.sercice.CommandeService;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.util.Date;
 import java.util.List;
+import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.UUID;
+
 
 @Service
 @Transactional
@@ -22,6 +28,7 @@ public class CommandeServiceImpl implements CommandeService {
 
     private final CommandeRepository commandeRepository;
     private final CommandeMapper commandeMapper;
+    private static final Random RANDOM = new Random();
 
     public CommandeServiceImpl(CommandeRepository commandeRepository, CommandeMapper commandeMapper) {
         this.commandeRepository = commandeRepository;
@@ -42,6 +49,13 @@ public class CommandeServiceImpl implements CommandeService {
 
         // Initialiser l'état de la commande à "En Cours"
         commande.setEtatCommande(EtatCommande.EN_COURS);
+
+        // Définir la date de commande à la date et l'heure actuelles en GMT
+        commande.setDateCommande(LocalDateTime.now(ZoneOffset.UTC));
+
+        // Générer un numéro de commande unique
+        commande.setNumeroCommande(genererNumeroCommande());
+
 
         // Sauvegarder la commande
         Commande savedCommande = commandeRepository.save(commande);
@@ -99,5 +113,24 @@ public class CommandeServiceImpl implements CommandeService {
                 .orElseThrow(() -> new ResourceNotFoundException("Commande non trouvée avec l'ID : " + commandeId));
 
         commandeRepository.delete(commande);
+    }
+
+    // Méthode pour générer un numéro de commande unique
+    private String genererNumeroCommande() {
+
+        // Obtenir la date et l'heure du système
+        String dateFormat = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
+
+        // Générer un identifiant aléatoire de 4 chiffres
+        int randomSuffix = RANDOM.nextInt(10000); // 0 à 9999
+        String numeroCommande = "COM" + dateFormat + String.format("%04d", randomSuffix);
+
+        // Vérifier unicité dans la base de données
+        while (commandeRepository.existsByNumeroCommande(numeroCommande)) {
+            randomSuffix = RANDOM.nextInt(10000);
+            numeroCommande = "COM" + dateFormat + String.format("%04d", randomSuffix);
+        }
+
+        return numeroCommande;
     }
 }

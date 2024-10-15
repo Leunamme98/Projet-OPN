@@ -9,4 +9,6 @@ import java.util.List;
 public interface CommandeRepository extends JpaRepository<Commande, String> {
 
     List<Commande> findByClientId(String clientId);
+
+    boolean existsByNumeroCommande(String numeroCommande);
 }

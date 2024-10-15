@@ -9,7 +9,6 @@ import java.util.List;
 
 @Mapper(componentModel = "spring")
 public interface ClientMapper {
-
     @Mapping(target = "motDePasse", ignore = true)
     ClientDto toDto(Client client);
 

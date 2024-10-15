@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
+import java.time.LocalDateTime;
 
 @Entity
 @Data @AllArgsConstructor @NoArgsConstructor
@@ -14,7 +14,8 @@ public class Commande {
     private String id;
 
     private Double montantTotalCommande;
-
+    private String numeroCommande;
+    LocalDateTime dateCommande;
     private EtatCommande etatCommande;
 
 
