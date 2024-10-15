@@ -23,4 +23,6 @@ public interface CommandeService {
 
     // Supprimer une commande par ID
     void supprimerCommande(String commandeId);
+
+    void mettreAJourMontantTotalCommande(String commandeId);
 }

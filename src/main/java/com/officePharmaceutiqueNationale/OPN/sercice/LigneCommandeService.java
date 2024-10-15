@@ -1,28 +1,29 @@
 package com.officePharmaceutiqueNationale.OPN.sercice;
 
 import com.officePharmaceutiqueNationale.OPN.dto.LigneCommandeDto;
+import com.officePharmaceutiqueNationale.OPN.model.LignePanier;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
 
 public interface LigneCommandeService {
 
-    // Enregistrer une nouvelle ligne de commande
-    LigneCommandeDto enregistrerUneLigneCommande(LigneCommandeDto ligneCommandeDto);
-
-    // Modifier une ligne de commande existante
-    LigneCommandeDto modifierUneLigneCommande(LigneCommandeDto ligneCommandeDto);
-
-    // Supprimer une ligne de commande par ID
-    void supprimerUneLigneCommande(String id);
+    // Créer une nouvelle ligne de commande
+    LigneCommandeDto creerLigneCommande(LigneCommandeDto ligneCommandeDto,String commandeId);
 
     // Récupérer une ligne de commande par son ID
-    LigneCommandeDto recupererLigneCommandeParId(String idLigneCommande);
+    LigneCommandeDto getLigneCommandeById(String ligneCommandeId);
 
-    // Récupérer toutes les lignes de commande
-    List<LigneCommandeDto> recupererToutesLesLignesCommande();
+    // Récupérer toutes les lignes de commande associées à une commande
+    List<LigneCommandeDto> getLignesCommandeByCommandeId(String commandeId);
 
-    // Pagination des lignes de commande
-    Page<LigneCommandeDto> recuperationParPagination(int page, int limit);
+    // Méthode pour mettre à jour uniquement la quantité d'une ligne de commande
+    LigneCommandeDto mettreAJourQuantiteLigneCommande(String ligneCommandeId, int nouvelleQuantite);
+
+    // Supprimer une ligne de commande par son ID
+    void supprimerLigneCommande(String ligneCommandeId);
+
+    // Méthode pour créer une ligne de commande à partir d'une ligne de panier
+    void creerLigneCommandeDepuisLignePanier(LignePanier lignePanier, String commandeId);
 
 }

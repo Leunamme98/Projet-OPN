@@ -3,114 +3,130 @@ package com.officePharmaceutiqueNationale.OPN.sercice.impl;
 import com.officePharmaceutiqueNationale.OPN.dto.LigneCommandeDto;
 import com.officePharmaceutiqueNationale.OPN.exception.ResourceNotFoundException;
 import com.officePharmaceutiqueNationale.OPN.mapper.LigneCommandeMapper;
-import com.officePharmaceutiqueNationale.OPN.model.Article;
 import com.officePharmaceutiqueNationale.OPN.model.Commande;
 import com.officePharmaceutiqueNationale.OPN.model.LigneCommande;
-import com.officePharmaceutiqueNationale.OPN.repository.ArticleRepository;
+import com.officePharmaceutiqueNationale.OPN.model.LignePanier;
 import com.officePharmaceutiqueNationale.OPN.repository.CommandeRepository;
 import com.officePharmaceutiqueNationale.OPN.repository.LigneCommandeRepository;
+import com.officePharmaceutiqueNationale.OPN.sercice.CommandeService;
 import com.officePharmaceutiqueNationale.OPN.sercice.LigneCommandeService;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
-import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
-@RequiredArgsConstructor
 public class LigneCommandeServiceImpl implements LigneCommandeService {
 
     private final LigneCommandeRepository ligneCommandeRepository;
     private final LigneCommandeMapper ligneCommandeMapper;
-    private final ArticleRepository articleRepository;
+    private final CommandeService  commandeService;
     private final CommandeRepository commandeRepository;
 
+    public LigneCommandeServiceImpl(LigneCommandeRepository ligneCommandeRepository, LigneCommandeMapper ligneCommandeMapper, CommandeService  commandeService, CommandeRepository commandeRepository) {
+        this.ligneCommandeRepository = ligneCommandeRepository;
+        this.ligneCommandeMapper = ligneCommandeMapper;
+        this.commandeService = commandeService;
+        this.commandeRepository = commandeRepository;
+    }
+
+    // Créer une nouvelle ligne de commande
     @Override
-    public LigneCommandeDto enregistrerUneLigneCommande(LigneCommandeDto ligneCommandeDto) {
-
-        // Vérifier l'existence de l'article
-        Article article = articleRepository.findById(ligneCommandeDto.getArticle().getId())
-                .orElseThrow(() -> new ResourceNotFoundException("Article avec ID " + ligneCommandeDto.getArticle().getId() + " non trouvé."));
-
-        // Vérifier l'existence de la commande
-        Commande commande = commandeRepository.findById(ligneCommandeDto.getCommande().getId())
-                .orElseThrow(() -> new ResourceNotFoundException("Commande avec ID " + ligneCommandeDto.getCommande().getId() + " non trouvée."));
-
-        // Vérifier si la quantité demandée est disponible dans le stock
-        if (ligneCommandeDto.getQuantiteLigneCommande() > article.getQuantiteStock()) {
-            throw new IllegalArgumentException("Quantité demandée supérieure à la quantité en stock de l'article.");
-        }
-
-        // Mettre à jour l'attribut isDeleted de l'article
-        article.setIsDeleted(false);
-
-        // Calculer le prix total de la ligne de commande
-        double prixTotal = ligneCommandeDto.getQuantiteLigneCommande() * article.getPrixGenerique();
-
-        // Mettre à jour la quantité en stock de l'article
-        article.setQuantiteStock(article.getQuantiteStock() - ligneCommandeDto.getQuantiteLigneCommande());
-        articleRepository.save(article);
-
-        // Créer une nouvelle ligne de commande
+    public LigneCommandeDto creerLigneCommande(LigneCommandeDto ligneCommandeDto, String commandeId) {
         LigneCommande ligneCommande = ligneCommandeMapper.toEntity(ligneCommandeDto);
-        ligneCommande.setId(UUID.randomUUID().toString());
-        ligneCommande.setPrixLigneCommande(prixTotal);
+        ligneCommande.setCommande(commandeRepository.findById(commandeId)
+                .orElseThrow(() -> new ResourceNotFoundException("Commande non trouvée")));
 
-        // Enregistrer la nouvelle ligne de commande dans la base de données
-        LigneCommande savedLigneCommande = ligneCommandeRepository.save(ligneCommande);
-        return ligneCommandeMapper.toDto(savedLigneCommande);
+        ligneCommande = ligneCommandeRepository.save(ligneCommande);
 
-    }
+        // Mettre à jour le montant total de la commande après avoir ajouté la ligne de commande
+        commandeService.mettreAJourMontantTotalCommande(commandeId);
 
-    @Override
-    public LigneCommandeDto modifierUneLigneCommande(LigneCommandeDto ligneCommandeDto) {
-        return null;
-    }
-
-    @Override
-    public void supprimerUneLigneCommande(String id) {
-        // Vérifier l'existence de la ligne de commande
-        LigneCommande ligneCommande = ligneCommandeRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Ligne de commande avec ID " + id + " non trouvée."));
-
-        // Vérifier si la ligne de commande est liée à une commande d'article
-        if (ligneCommande.getCommande() != null) {
-            throw new IllegalArgumentException("La ligne de commande avec ID " + id + " ne peut pas être supprimée car elle est liée à une commande d'article.");
-        }
-
-        ligneCommandeRepository.delete(ligneCommande);
-    }
-
-    @Override
-    public LigneCommandeDto recupererLigneCommandeParId(String idLigneCommande) {
-        // Vérifier l'existence de la ligne de commande
-        LigneCommande ligneCommande = ligneCommandeRepository.findById(idLigneCommande)
-                .orElseThrow(() -> new ResourceNotFoundException("Ligne de commande avec ID " + idLigneCommande + " non trouvée."));
         return ligneCommandeMapper.toDto(ligneCommande);
     }
 
+    // Récupérer une ligne de commande par son ID
     @Override
-    public List<LigneCommandeDto> recupererToutesLesLignesCommande() {
-        List<LigneCommande> lignesCommande = ligneCommandeRepository.findAll();
-        return ligneCommandeMapper.toDtoList(lignesCommande);
-    }
-
-    @Override
-    public Page<LigneCommandeDto> recuperationParPagination(int page, int limit) {
-
-        // Vérifier si la page et la limite sont valides
-        if (page < 0 || limit <= 0) {
-            throw new IllegalArgumentException("La page doit être >= 0 et la limite doit être > 0.");
+    public LigneCommandeDto getLigneCommandeById(String ligneCommandeId) {
+        if (ligneCommandeId == null) {
+            throw new IllegalArgumentException("L'ID de la ligne de commande ne peut pas être nul");
         }
 
-        Pageable pageable = PageRequest.of(page, limit);
-        Page<LigneCommande> pageLignesCommande = ligneCommandeRepository.findAll(pageable);
-        return pageLignesCommande.map(ligneCommandeMapper::toDto);
+        LigneCommande ligneCommande = ligneCommandeRepository.findById(ligneCommandeId)
+                .orElseThrow(() -> new ResourceNotFoundException("Ligne de commande non trouvée avec l'ID : " + ligneCommandeId));
+
+        return ligneCommandeMapper.toDto(ligneCommande);
     }
 
+    // Récupérer toutes les lignes de commande associées à une commande
+    @Override
+    public List<LigneCommandeDto> getLignesCommandeByCommandeId(String commandeId) {
+        if (commandeId == null) {
+            throw new IllegalArgumentException("L'ID de la commande ne peut pas être nul");
+        }
+
+        List<LigneCommande> lignesCommande = ligneCommandeRepository.findByCommandeId(commandeId);
+        return lignesCommande.stream()
+                .map(ligneCommandeMapper::toDto)
+                .collect(Collectors.toList());
+    }
+
+    // Mettre à jour la quantité ou les informations d'une ligne de commande
+    @Override
+    public LigneCommandeDto mettreAJourQuantiteLigneCommande(String ligneCommandeId, int nouvelleQuantite) {
+        // Récupération de la ligne de commande par son ID
+        LigneCommande ligneCommande = ligneCommandeRepository.findById(ligneCommandeId)
+                .orElseThrow(() -> new EntityNotFoundException("Ligne de commande introuvable avec ID: " + ligneCommandeId));
+
+        // Mise à jour de la quantité
+        ligneCommande.setQuantiteLigneCommande(nouvelleQuantite);
+
+        // Sauvegarde des modifications
+        LigneCommande ligneCommandeMiseAJour = ligneCommandeRepository.save(ligneCommande);
+
+        // Récupérer l'ID de la commande associée à cette ligne de commande
+        String commandeId = ligneCommande.getCommande().getId();
+
+
+        // Mettre à jour le montant total de la commande après avoir modifié la ligne de commande
+        commandeService.mettreAJourMontantTotalCommande(commandeId);
+
+        // Retourner le DTO correspondant
+        return ligneCommandeMapper.toDto(ligneCommandeMiseAJour);
+    }
+
+
+    // Méthode pour créer une LigneCommande à partir d'une LignePanier
+    @Override
+    public void creerLigneCommandeDepuisLignePanier(LignePanier lignePanier, String commandeId) {
+        // Récupérer la commande associée à l'ID fourni
+        Commande commande = commandeRepository.findById(commandeId)
+                .orElseThrow(() -> new ResourceNotFoundException("Commande non trouvée avec l'ID : " + commandeId));
+
+        // Créer une nouvelle LigneCommande à partir de la LignePanier
+        LigneCommande ligneCommande = new LigneCommande();
+        ligneCommande.setArticle(lignePanier.getArticle());  // Transférer l'article depuis la ligne du panier
+        ligneCommande.setQuantiteLigneCommande(lignePanier.getQuantite());  // Transférer la quantité
+        ligneCommande.setCommande(commande);  // Associer la ligne de commande à la commande correspondante
+
+        // Sauvegarder la LigneCommande
+        ligneCommandeRepository.save(ligneCommande);
+    }
+
+
+    // Supprimer une ligne de commande par son ID
+    @Override
+    public void supprimerLigneCommande(String ligneCommandeId) {
+        if (ligneCommandeId == null) {
+            throw new IllegalArgumentException("L'ID de la ligne de commande ne peut pas être nul");
+        }
+
+        LigneCommande ligneCommande = ligneCommandeRepository.findById(ligneCommandeId)
+                .orElseThrow(() -> new ResourceNotFoundException("Ligne de commande non trouvée avec l'ID : " + ligneCommandeId));
+
+        ligneCommandeRepository.delete(ligneCommande);
+    }
 }
