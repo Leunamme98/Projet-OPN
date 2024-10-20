@@ -2,15 +2,12 @@ package com.officePharmaceutiqueNationale.OPN.sercice;
 
 import com.officePharmaceutiqueNationale.OPN.dto.LignePanierDto;
 
-import java.util.List;
 
 public interface LignePanierService {
 
-    LignePanierDto creerLignePanier(LignePanierDto lignePanierDto);
-
-    LignePanierDto modifierQuantiteLignePanier(String idLignePanier, int nouvelleQuantite);
-
+    LignePanierDto ajouterLignePanier(LignePanierDto lignePanierDto);
+    LignePanierDto modifierLignePanier(LignePanierDto lignePanierDto);
     void supprimerLignePanier(String idLignePanier);
+    LignePanierDto obtenirLignePanierParId(String lignePanier);
 
-    List<LignePanierDto> recupererLignesParPanierId(String panierId);
 }

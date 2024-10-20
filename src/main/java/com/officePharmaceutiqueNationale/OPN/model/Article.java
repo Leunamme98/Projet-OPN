@@ -17,6 +17,7 @@ public  class Article {
     private String libelle;
     private LocalDate dateExpiration;
     private Double prixGenerique;
+    private Double prixUnitaire;
     private int quantiteStockSeuil;
     private int quantiteStock;
     private String description;

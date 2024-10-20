@@ -68,6 +68,7 @@ public class DispositifMedicalServiceImpl implements DispositifMedicalService {
         existingDispositif.setEtat(dto.getEtat());
         existingDispositif.setPaysFabrication(dto.getPaysFabrication());
         existingDispositif.setQuantiteStock(dto.getQuantiteStock());
+        existingDispositif.setPrixUnitaire(dto.getPrixUnitaire());
 
         DispositifMedical updatedDispositif = dispositifMedicalRepository.save(existingDispositif);
         return dispositifMedicalMapper.toDto(updatedDispositif);

@@ -5,19 +5,15 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
 
 @Entity
 @Data @AllArgsConstructor @NoArgsConstructor
 public class Panier {
-
     @Id
     private String id;
 
-    @ManyToOne
-    @JoinColumn(name="client_id")
-    private Client client;
+    private Double prixTotalPanier;
+    private int nombreArticle;
+    private String clientId;
 
-    @OneToMany(mappedBy = "panier")
-    private List<LignePanier> lignePaniers;
 }

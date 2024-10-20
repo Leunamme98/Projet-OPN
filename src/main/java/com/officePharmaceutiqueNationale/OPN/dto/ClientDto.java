@@ -46,7 +46,8 @@ public class ClientDto {
     @Pattern(regexp = "^\\+?[0-9. ()-]{7,25}$", message = "Le format du numéro de contact est invalide")
     private String numeroContactResponsable;
 
-    private Boolean isDeleted;
+    private PanierDto panier;
 
+    private Boolean isDeleted;
     private Boolean isActive;
 }

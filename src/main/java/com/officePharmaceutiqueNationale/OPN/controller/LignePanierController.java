@@ -2,46 +2,46 @@ package com.officePharmaceutiqueNationale.OPN.controller;
 
 import com.officePharmaceutiqueNationale.OPN.dto.LignePanierDto;
 import com.officePharmaceutiqueNationale.OPN.sercice.LignePanierService;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 
 @RestController
 @RequestMapping("/opn/api/ligne-panier")
+@RequiredArgsConstructor
 public class LignePanierController {
 
     private final LignePanierService lignePanierService;
 
-    public LignePanierController(LignePanierService lignePanierService) {
-        this.lignePanierService = lignePanierService;
-    }
-
-    // Créer une nouvelle ligne panier
+    // Ajouter une ligne de panier
     @PostMapping
-    public ResponseEntity<LignePanierDto> creerLignePanier(@RequestBody LignePanierDto lignePanierDto) {
-        LignePanierDto nouvelleLigne = lignePanierService.creerLignePanier(lignePanierDto);
-        return ResponseEntity.ok(nouvelleLigne);
+    public ResponseEntity<LignePanierDto> ajouterLignePanier(@Valid @RequestBody LignePanierDto lignePanierDto) {
+        LignePanierDto createdLignePanier = lignePanierService.ajouterLignePanier(lignePanierDto);
+        return new ResponseEntity<>(createdLignePanier, HttpStatus.CREATED);
     }
 
-    // Modifier la quantité d'une ligne panier
-    @PutMapping("/{lignePanierId}")
-    public ResponseEntity<LignePanierDto> modifierQuantiteLignePanier(@PathVariable String lignePanierId, @RequestParam int nouvelleQuantite) {
-        LignePanierDto updatedLigne = lignePanierService.modifierQuantiteLignePanier(lignePanierId, nouvelleQuantite);
-        return ResponseEntity.ok(updatedLigne);
+    // Modifier une ligne de panier
+    @PutMapping
+    public ResponseEntity<LignePanierDto> modifierLignePanier(@RequestBody LignePanierDto lignePanierDto) {
+        LignePanierDto updatedLignePanier = lignePanierService.modifierLignePanier(lignePanierDto);
+        return new ResponseEntity<>(updatedLignePanier, HttpStatus.OK);
     }
 
-    // Supprimer une ligne panier
-    @DeleteMapping("/{lignePanierId}")
-    public ResponseEntity<Void> supprimerLignePanier(@PathVariable String lignePanierId) {
-        lignePanierService.supprimerLignePanier(lignePanierId);
-        return ResponseEntity.noContent().build();
+    // Supprimer une ligne de panier
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> supprimerLignePanier(@PathVariable String id) {
+        lignePanierService.supprimerLignePanier(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    // Récupérer une ligne panier par l'ID du panier
-    @GetMapping("/panier/{panierId}")
-    public ResponseEntity<List<LignePanierDto>> recupererLignesParPanierId(@PathVariable String panierId) {
-        List<LignePanierDto> lignes = lignePanierService.recupererLignesParPanierId(panierId);
-        return ResponseEntity.ok(lignes);
+    // Obtenir une ligne de panier par ID
+    @GetMapping("/{id}")
+    public ResponseEntity<LignePanierDto> obtenirLignePanierParId(@PathVariable String id) {
+        LignePanierDto lignePanierDto = lignePanierService.obtenirLignePanierParId(id);
+        return new ResponseEntity<>(lignePanierDto, HttpStatus.OK);
     }
+
 }

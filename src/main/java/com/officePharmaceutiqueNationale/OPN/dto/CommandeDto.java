@@ -19,6 +19,7 @@ public class CommandeDto {
     private EtatCommande etatCommande;
 
     private ClientDto client;
-    private FactureDto facture;
+
+    //private FactureDto facture;
 
 }

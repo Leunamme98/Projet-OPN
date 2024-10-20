@@ -11,6 +11,7 @@ import com.officePharmaceutiqueNationale.OPN.repository.SpecialitePharmaceutique
 import com.officePharmaceutiqueNationale.OPN.sercice.SpecialitePharmaceutiqueService;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -21,18 +22,12 @@ import java.util.UUID;
 
 @Service
 @Transactional
+@RequiredArgsConstructor
 public class SpecialitePharmaceutiqueServiceImpl implements SpecialitePharmaceutiqueService {
 
     private final SpecialitePharmaceutiqueRepository specialiteRepository;
     private final SpecialitePharmaceutiqueMapper specialiteMapper;
     private final DciRepository dciRepository;
-
-    public SpecialitePharmaceutiqueServiceImpl(SpecialitePharmaceutiqueRepository specialiteRepository,
-                                               SpecialitePharmaceutiqueMapper specialiteMapper, DciRepository dciRepository, DciMapper dciMapper) {
-        this.specialiteRepository = specialiteRepository;
-        this.specialiteMapper = specialiteMapper;
-        this.dciRepository = dciRepository;
-    }
 
     // Enregistrer une spécialité pharmaceutique
     @Override

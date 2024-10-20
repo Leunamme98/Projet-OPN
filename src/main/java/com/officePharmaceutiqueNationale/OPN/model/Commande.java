@@ -23,7 +23,9 @@ public class Commande {
     @JoinColumn(name="client_id")
     private Client client;
 
+    /*
     @OneToOne
-    private Facture facture;
+     private Facture facture;
+    **/
 
 }
