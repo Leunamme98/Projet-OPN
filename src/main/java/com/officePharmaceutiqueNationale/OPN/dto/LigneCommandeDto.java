@@ -6,10 +6,8 @@ import lombok.Data;
 public class LigneCommandeDto {
 
     private String id;
-
     private int quantiteLigneCommande;
-
     private ArticleDto article;
-
     private CommandeDto commande;
+
 }

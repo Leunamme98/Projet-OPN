@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Random;
 import java.util.UUID;
 
 
@@ -31,7 +32,6 @@ public class PanierServiceImpl implements PanierService {
     private final CommandeRepository commandeRepository;
     private final CommandeMapper commandeMapper;
     private final LigneCommandeRepository ligneCommandeRepository;
-    private final ClientMapperImpl clientMapper;
     private final LignePanierMapperImpl lignePanierMapper;
 
 
@@ -173,48 +173,57 @@ public class PanierServiceImpl implements PanierService {
     // Valider un panier en le transformant en commande
     @Override
     public CommandeDto validerPanier(String idPanier) {
-
-        // Récupérer le panier par son ID ou lever une exception si non trouvé
+        // Récupérer le panier
         Panier panier = panierRepository.findById(idPanier)
                 .orElseThrow(() -> new ResourceNotFoundException("Panier non trouvé avec l'ID : " + idPanier));
 
-        // Créer une nouvelle commande
-        CommandeDto commandeDto = new CommandeDto();
-        commandeDto.setNumeroCommande(UUID.randomUUID().toString());
-        commandeDto.setMontantTotalCommande(panier.getPrixTotalPanier());
-        commandeDto.setDateCommande(LocalDateTime.now());
-        commandeDto.setEtatCommande(EtatCommande.EN_ATTENTE);
-
-        // Récupérer le client associé au panier
+        // Récupérer le client
         Client client = clientRepository.findById(panier.getClientId())
                 .orElseThrow(() -> new ResourceNotFoundException("Client non trouvé avec l'ID : " + panier.getClientId()));
-        commandeDto.setClient(clientMapper.toDto(client));
 
-        // Récupérer les lignes de panier associées
+        // Créer et initialiser la commande
+        Commande commande = new Commande();
+        commande.setId(UUID.randomUUID().toString());
+        commande.setNumeroCommande(generateNumeroCommande());
+        commande.setMontantTotalCommande(panier.getPrixTotalPanier());
+        commande.setDateCommande(LocalDateTime.now());
+        commande.setEtatCommande(EtatCommande.EN_ATTENTE);
+        commande.setClient(client);
+
+        // Récupérer les lignes de panier
         List<LignePanier> lignesPanier = lignePanierRepository.findByPanierId(idPanier);
 
-        // Créer les lignes de commande à partir des lignes de panier et les sauvegarder
-        Commande commande = commandeMapper.toEntity(commandeDto);
-        for (LignePanier lignePanier : lignesPanier) {
-            LigneCommande ligneCommande = new LigneCommande();
-            ligneCommande.setId(UUID.randomUUID().toString());
-            ligneCommande.setArticle(lignePanier.getArticle());
-            ligneCommande.setQuantiteLigneCommande(lignePanier.getQuantite());
-            ligneCommande.setCommande(commande);
-
-            ligneCommandeRepository.save(ligneCommande);
-
-            // Supprimer la ligne de panier après transformation en ligne de commande
-            lignePanier.setPanier(null);
-            lignePanierRepository.delete(lignePanier);
-        }
+        // Utiliser le mapper pour transformer les lignes de panier en lignes de commande
+        List<LigneCommande> lignesCommande = lignePanierMapper.toLigneCommandeList(lignesPanier);
 
         // Sauvegarder la commande
         commandeRepository.save(commande);
 
-        // Retourner le DTO de la commande
+        // Associer la commande à chaque ligne de commande et sauvegarder
+        for (LigneCommande ligneCommande : lignesCommande) {
+            ligneCommande.setId(UUID.randomUUID().toString());
+            ligneCommande.setCommande(commande);
+           ligneCommandeRepository.save(ligneCommande);
+        }
+
+        // Supprimer les lignes de panier après transformation
+       lignePanierRepository.deleteAll(lignesPanier);
+
+        // Retourner le DTO de la commande créée
         return commandeMapper.toDto(commande);
     }
 
+    // Méthode pour générer un numéro de commande unique
+    private String generateNumeroCommande() {
+        String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+        StringBuilder numeroCommande = new StringBuilder("COM");
+
+        Random random = new Random();
+        for (int i = 0; i < 8; i++) {
+            int index = random.nextInt(characters.length());
+            numeroCommande.append(characters.charAt(index));
+        }
+        return numeroCommande.toString();
+    }
 
 }
