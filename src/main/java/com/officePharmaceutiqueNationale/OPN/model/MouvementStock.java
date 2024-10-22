@@ -18,7 +18,6 @@ public class MouvementStock {
     private int quantite;
     private TypeMouvement typeMouvement;
     private LocalDate dateMouvement;
-    private Double prix;
 
     @ManyToOne
     private Article article;

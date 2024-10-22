@@ -1,7 +1,5 @@
 package com.officePharmaceutiqueNationale.OPN.model;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -18,6 +16,10 @@ public class Reclamation {
 
     private String descriptionReclamation;
     private LocalDate dateReclamation;
+
+    @Enumerated(EnumType.STRING)
+    private TypeReclamation typeReclamation;
+
     private EtatReclamation etatReclamation;
 
     @ManyToOne
