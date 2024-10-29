@@ -14,6 +14,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/opn/api/panier")
+@CrossOrigin(origins = "*")
 @AllArgsConstructor
 public class PanierController {
 

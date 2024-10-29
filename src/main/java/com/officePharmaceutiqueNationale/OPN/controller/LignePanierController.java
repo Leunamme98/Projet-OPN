@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/opn/api/ligne-panier")
 @RequiredArgsConstructor
+@CrossOrigin(origins = "*")
 public class LignePanierController {
 
     private final LignePanierService lignePanierService;

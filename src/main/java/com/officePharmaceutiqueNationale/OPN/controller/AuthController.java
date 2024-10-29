@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("opn/api/auth")
+@CrossOrigin(origins = "*")
 @AllArgsConstructor
 public class AuthController {
 
