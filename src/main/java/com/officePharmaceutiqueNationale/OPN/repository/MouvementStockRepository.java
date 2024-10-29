@@ -2,9 +2,11 @@
 
 import com.officePharmaceutiqueNationale.OPN.model.MouvementStock;
 import org.springframework.data.jpa.repository.JpaRepository;
- 
 
- 
-public interface MouvementStockRepository extends JpaRepository<MouvementStock, String> {
-    
+import java.util.List;
+
+
+ public interface MouvementStockRepository extends JpaRepository<MouvementStock, String> {
+
+    List<MouvementStock> findByArticleId(String articleId);
 }
