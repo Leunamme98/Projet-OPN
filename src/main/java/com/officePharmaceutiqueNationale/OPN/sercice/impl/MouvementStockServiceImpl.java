@@ -30,8 +30,8 @@ public class MouvementStockServiceImpl implements MouvementStockService {
     public MouvementStockDto enregistrerMouvement(MouvementStockDto mouvementStockDto) {
 
         // Récupérer l'article en fonction de son ID
-        Article article = articleRepository.findById(mouvementStockDto.getArticleDto().getId())
-                .orElseThrow(() -> new ResourceNotFoundException("Article non trouvé avec l'ID : " + mouvementStockDto.getArticleDto().getId()));
+        Article article = articleRepository.findById(mouvementStockDto.getArticle().getId())
+                .orElseThrow(() -> new ResourceNotFoundException("Article non trouvé avec l'ID : " + mouvementStockDto.getArticle().getId()));
 
         // Créer un nouvel objet MouvementStock à partir du DTO
         MouvementStock mouvementStock = mouvementStockMapper.toEntity(mouvementStockDto);
