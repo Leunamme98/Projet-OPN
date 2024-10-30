@@ -14,5 +14,5 @@ public class MouvementStockDto {
     private TypeMouvement typeMouvement;
     private LocalDate dateMouvement;
 
-    private String articleId;
+    private ArticleDto articleDto;
 }
