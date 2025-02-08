@@ -20,4 +20,3 @@ public class UtilisateurDto {
 
     private Boolean isActive;
 }
-

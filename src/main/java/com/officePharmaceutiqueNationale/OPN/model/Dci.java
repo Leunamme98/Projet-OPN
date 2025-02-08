@@ -15,4 +15,6 @@ public class Dci {
     private String nomDci;
     private Boolean isDeleted;
 
+
+
 }
